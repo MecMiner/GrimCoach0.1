@@ -9,15 +9,19 @@ import ButtonGame from '../components/ButtonGame';
 import SpeechText from '../components/speechText';
 import Title from '../components/title';
 import StatusGame from '../components/StatusGame';
+import Correct from '../modal/Animate';
 
 
 
 export default function EscrevaExpressao() {
   const [inputEmotion, setInputEmotion] = useState<string>(''); //Inicializar Input de Emoçao
   const [feedback, setFeedback] = useState<string>(''); //Inicializa feedeback
-  const [expression, setExpression] = useState<string>('alegre'); // Inicialize com uma emoção padrão
+  const [expression, setExpression] = useState<string>(''); // Inicialize com uma emoção padrão
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState<boolean>(false); // Estado para controlar a visibilidade da modal de sucesso
   const [current, setCurrent] = useState<number>(0); //Inicial parte da fase em que esta
+  const [usedExpressions, setUsedExpressions] = useState<string[]>([]);
+  const [animated, setAnimated] = useState<boolean>(false);
+
 
   useEffect(() => {
     // Escolhe aleatoriamente uma emoção
@@ -50,19 +54,31 @@ export default function EscrevaExpressao() {
   };
 
   const resetFase = () => {
+    setAnimated(false);
     setInputEmotion(''); // Limpa o campo de entrada de emoção
     setFeedback(''); // Limpa o feedback
-    const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)]; // Escolhe uma nova emoção aleatória
-    setExpression(randomEmotion.toLowerCase()); // Define a nova emoção
-    setCurrent(current + 1)
+  
+    if (usedExpressions.length < expressionName.length) {
+      let randomEmotion;
+      do {
+        randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
+      } while (usedExpressions.includes(randomEmotion));
+      
+      setExpression(randomEmotion.toLowerCase()); // Define a nova emoção
+      setUsedExpressions([...usedExpressions, randomEmotion]);
+    } else {
+      // Todas as expressões foram usadas, você pode reiniciar o jogo ou tomar outra ação aqui
+    }
+  
+    setCurrent(current + 1);
   };
 
   const sucess = () => {
     setCurrent(current + 1)
-    if (current < 5) {
-      resetFase();
-    } else {
+    if (current === 4) {
       setIsSuccessModalVisible(true)
+    } else {
+      setAnimated(true);
     }
 
 
@@ -76,7 +92,7 @@ export default function EscrevaExpressao() {
 
   return (
     <View style={styles.container}>
-
+      <Correct isVisible={animated} onAnimationFinish={resetFase}/>
       <StatusGame atual={current} total={5} />
       <View style={{ flexDirection: 'row', marginTop: 30 }}>
         <SpeechText style={{}} text={'Digite a expressão que a imagem passsa'} />

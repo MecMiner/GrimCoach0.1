@@ -33,7 +33,19 @@ export default function CreateProfile() {
     setAvatarModalVisible(false);
   };
 
-
+  const login = async (id: string | number[]) => {
+    const user = {
+      hash: id,
+    }
+    try {
+      await AsyncStorage.setItem('@grimcoach:token', JSON.stringify(user)).then((e) => {
+        console.log('User Logado');
+        router.replace('/selectLevel')
+      })
+    } catch (error) {
+      console.log('Erro ao inserir User')
+    }
+  }
 
   const saveProfileData = async () => { 
     try {
@@ -56,6 +68,7 @@ export default function CreateProfile() {
 
       await AsyncStorage.setItem('@grimcoach:profile', JSON.stringify(data));
       console.log('Dados do perfil salvos com sucesso!');
+      login(id)
  
     } catch (error) {
       console.error('Erro ao salvar dados do perfil:', error);
@@ -78,7 +91,6 @@ export default function CreateProfile() {
       return;
     }
     saveProfileData();
-    router.replace('/selectLevel');
   };
   return (
     <View style={styles.container}>

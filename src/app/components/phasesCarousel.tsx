@@ -1,12 +1,13 @@
 
 import { ImageSourcePropType, FlatList, View, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native';
 import Title from './title';
-import { Href, Link} from 'expo-router';
+import {Link} from 'expo-router';
+import { Href } from 'expo-router/build/link/href';
 
 interface Images {
     title: string,
     uri: ImageSourcePropType,
-    link: Href<string>;
+    link: Href;
 }
 
 
@@ -80,12 +81,12 @@ const styles = StyleSheet.create({
     flatList: { flexGrow: 0},
     imageContainer: {
         width,
-        height: 420,
+        height: 700,
         justifyContent: 'center',
         alignItems: 'center'
     },
     image: {
-        height: 300,
+        height: 500,
         width: width-100,
         resizeMode: 'cover',
         borderRadius: 10,
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     initialPhase: {
         alignItems: 'center',
         justifyContent: 'center',
-        height: 400,
+        height: 600,
         width: width-50,
         resizeMode: 'cover',
         borderRadius: 10,

@@ -28,6 +28,10 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
+    "androidStatusBar": {
+      "backgroundColor": "#C8EBFF",
+      "translucent": false
+    },
     "plugins": [
       "expo-router"
     ]

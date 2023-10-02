@@ -13,6 +13,7 @@ const Correct:React.FC<AnimatesProp> = ({isVisible, onAnimationFinish}) => {
       animationType="fade"
       transparent={true}
       visible={isVisible}
+      statusBarTranslucent={false}
     >
       <View style={styles.modalBackground}>
         <AnimatedLottieView
@@ -33,7 +34,7 @@ export default Correct
 const styles = StyleSheet.create({
     modalBackground: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'rgba(0, 0, 0, 0.0)',
         justifyContent: 'center',
         alignItems: 'center',
       },

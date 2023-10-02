@@ -65,7 +65,7 @@ export default function Home() {
 
         <FlatList
             data={data}
-            style={{ maxHeight: 440 }}
+            style={{ maxHeight: 700 }}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator= {false}
             renderItem={({ item }) => (

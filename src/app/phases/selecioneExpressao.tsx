@@ -139,7 +139,7 @@ export default function SelecioneExpressao() {
         </View>
 
         <Text style={styles.feedback}>{feedback}</Text>
-        <StatusBar hidden />
+        <StatusBar style='dark' />
         <SuccessModal isVisible={isSuccessModalVisible} onClose={closeSuccessModal} />
       </View>
     </View>

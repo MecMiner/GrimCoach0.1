@@ -89,7 +89,7 @@ export default function SelectLevel() {
 
       </View>
       <FabButton back={() => { router.replace('/') }} style={styles.fabButton} avatar={user ? user.avatar : 'dragao'} />
-      <StatusBar hidden />
+      <StatusBar />
     </View>
   );
 }
