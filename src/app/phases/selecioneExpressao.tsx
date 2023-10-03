@@ -4,7 +4,7 @@ import expressionImages from './expressionImages'; // Certifique-se de que a imp
 import expressionName from './expressionName'; // Certifique-se de que a importação está correta
 import SuccessModal from '../modal/sucess';
 import StatusGame from '../components/StatusGame';
-import SpeechText from '../components/speechText';
+import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import { StatusBar } from 'expo-status-bar';
 import ButtonGame from '../components/ButtonGame';
@@ -98,15 +98,15 @@ export default function SelecioneExpressao() {
   return (
     <View style={styles.container}>
       <Correct isVisible={animate} onAnimationFinish={() => setAnimate(false)}/>
+      <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
 
       <StatusGame atual={current} total={5} />
-      <View style={{ flexDirection: 'row', marginTop: 60 }}>
-        <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
-        <Title title='Selecione a Expressão' />
-      </View>
       
       <View style={styles.game}>
-        {/* Exibir a imagem */}
+      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
+        <Title title='Selecione a Expressão' />
+      </View>
+
         {expressionImages.facil[correctEmotion] && (
           <View style={styles.viewImage}>
             <Image
@@ -116,7 +116,7 @@ export default function SelecioneExpressao() {
           </View>
         )}
 
-        {/* Organizar botões em dois grupos */}
+
         <View style={styles.buttonGroup}>
           <View style={styles.buttonColumn}>
             {options.slice(0, 2).map((option, index) => (
@@ -156,7 +156,8 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
     paddingTop: 40,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 
   viewImage: {
@@ -203,9 +204,11 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    backgroundColor: '#007AFF',
+    backgroundColor: 'white',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 20,
+    elevation: 5,
+    borderWidth: 1,
     marginVertical: 5,
   },
   buttonText: {

@@ -13,7 +13,7 @@ export default function Title({ title }: TitleProps) {
           color: '#FF914D',
           alignItems: 'center',
           textAlign: 'center',
-          padding: 10,
+          marginTop: 0,
           fontWeight: "bold"
         }}
       >

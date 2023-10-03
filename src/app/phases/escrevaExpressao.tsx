@@ -6,7 +6,7 @@ import stringSimilarity from 'string-similarity';
 import SuccessModal from '../modal/sucess';
 import { StatusBar } from 'expo-status-bar';
 import ButtonGame from '../components/ButtonGame';
-import SpeechText from '../components/speechText';
+import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import StatusGame from '../components/StatusGame';
 import Correct from '../modal/Animate';
@@ -93,12 +93,13 @@ export default function EscrevaExpressao() {
   return (
     <View style={styles.container}>
       <Correct isVisible={animated} onAnimationFinish={resetFase}/>
+      <SpeechText style={{}} text={'Digite a expressão que a imagem passsa'} />
       <StatusGame atual={current} total={5} />
-      <View style={{ flexDirection: 'row', marginTop: 30 }}>
-        <SpeechText style={{}} text={'Digite a expressão que a imagem passsa'} />
-        <Title title='Identifique a Expressão' />
-      </View>
       <View style={styles.game}>
+        <View style={{ flexDirection: 'row', marginBottom: 30 }}>
+
+          <Title title='Identifique a Expressão' />
+        </View>
         {expressionImages.facil[expression] && (
           <View style={styles.viewImage}>
             <Image

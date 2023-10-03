@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import Slider from '@react-native-community/slider';
-import { Entypo } from '@expo/vector-icons'; // Importe o ícone do Expo Icons
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Importe o AsyncStorage
 import { router, Link } from 'expo-router';
 import uuid from 'react-native-uuid'
@@ -13,7 +11,7 @@ import { ImageSourcePropType } from 'react-native';
 // Importe as imagens do arquivo expressionImages.tsx
 import expressionImages from './phases/expressionImages';
 import Title from './components/title';
-import SpeechText from './components/speechText';
+import SpeechText from './components/SpeechText';
 
 export default function CreateProfile() {
   const [inputName, setInputName] = useState('');
@@ -94,12 +92,12 @@ export default function CreateProfile() {
   };
   return (
     <View style={styles.container}>
-        <View style={{flexDirection: 'row', paddingTop: 30}}>
-          <SpeechText style={{}} text={'Crie um perfil, você tem que selecionar um avatar, inserir nome e idade'}/>
-          <Title title='Adicione um perfil'/>
-        </View>
-        <View style={styles.game}>
+      
+        <SpeechText style={{}} text={'Crie um perfil, você tem que selecionar um avatar, inserir nome e idade'}/>
 
+
+        <View style={styles.game}>
+        <Title title='Adicione um perfil'/>
         <TouchableOpacity onPress={openAvatarSelection} style={styles.avatarButton}>
           {selectedAvatar ? (
             <Image source={selectedAvatar} style={styles.avatarSelectionImage} />
@@ -137,8 +135,6 @@ export default function CreateProfile() {
           {feedback && <Text style={{color: 'red', position: 'absolute', bottom: 0}}>{feedback}</Text>}
         </View>
 
-      <StatusBar hidden />
-
       {/* Modal de seleção de avatar */}
       <Modal
         visible={isAvatarModalVisible}
@@ -175,7 +171,6 @@ export default function CreateProfile() {
           </View>
         </View>
       </Modal>
-      <StatusBar hidden/>
     </View>
   );
 }
@@ -236,7 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: 20,
     marginBottom: 20,
     elevation: 5,
     borderColor: '#ccc',
@@ -266,8 +261,8 @@ const styles = StyleSheet.create({
     width: '100%', // Quebra de linha
   },
   avatarSelectionImage: {
-    width: 50,
-    height: 50,
+    width: 80,
+    height: 80,
     margin: 5,
   },
   ageView:{

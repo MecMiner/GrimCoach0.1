@@ -3,8 +3,9 @@ import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackgroun
 import expressionImages from './expressionImages'; // Certifique-se de que a importação está correta
 import expressionName from './expressionName'; // Certifique-se de que a importação está correta
 import SuccessModal from '../modal/sucess';
-import SpeechText from '../components/speechText';
+import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
+import StatusGame from '../components/StatusGame';
 
 export default function LigueExpressao() {
   const [respost, setRespost] = useState<string[]>([]);
@@ -13,6 +14,7 @@ export default function LigueExpressao() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null); // Opção selecionada
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // Estado para controlar a visibilidade da modal de sucesso
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [atual, setAtual] = useState<number>(1);
 
   useEffect(() => {
     // Escolhe aleatoriamente a emoção correta
@@ -34,7 +36,6 @@ export default function LigueExpressao() {
         const novoArrayRespost = respost.filter(opcao => opcao !== selectedImage);
         setRespost(novoArrayRespost);
         setOptions(novoArrayOption);
-        setIsSuccessModalVisible(true);
         setSelectedImage(null);
         setSelectedOption(null);
       } else {
@@ -74,15 +75,27 @@ export default function LigueExpressao() {
 
   };
 
+  const resetGame= () => {
+    const randomIndex = Math.floor(Math.random() * expressionName.length);
+    const randomEmotion = expressionName[randomIndex];
+
+
+    // Gere 4 opções de emoção, incluindo a correta
+    const randomOptions = generateRandomOptions(expressionName, randomEmotion, 4);
+    setOptions(randomOptions);
+    setRespost(shuffleArray(randomOptions));
+  }
+
 
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row', marginTop: 60 }}>
+      <StatusGame atual={atual} total={3}/>
         <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
-        <Title title='Jogo da Memória' />
-      </View>
       <View style={styles.game}>
+      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
+        <Title title='Combine' />
+      </View>
         <View style={styles.row}>
           <View style={styles.column}>
             {options.map((e, index) => (
@@ -131,7 +144,8 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
     paddingTop: 40,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backgroundStyle: {
     width: '100%',
@@ -140,19 +154,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   column: {
-    flexDirection: 'column', // Organize as colunas em uma coluna vertical
-    alignItems: 'center', // Alinhe o conteúdo ao centro da tela
+    flexDirection: 'column', 
+    alignItems: 'center', 
     marginBottom: 10,
     margin: 30,
   },
   row: {
-    flexDirection: 'row', // Organize as colunas em uma linha horizontal
-    alignItems: 'center', // Alinhe o conteúdo ao centro da linha
-    marginVertical: 5, // Adicione margem vertical entre as linhas
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginVertical: 5, 
   },
   image: {
-    width: 100, // Defina o tamanho da imagem conforme necessário
-    height: 100, // Defina o tamanho da imagem conforme necessário
+    width: 100, 
+    height: 100, 
   },
   text: {
     fontSize: 16,
@@ -168,8 +182,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   boxOption: {
-    height: 100,
-    width: 100,
+    height: 150,
+    width: 150,
     backgroundColor: "#F5F5F5",
     borderRadius: 5,
     alignItems: 'center',

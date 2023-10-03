@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, ImageBackground, Text, SafeA
 import expressionImages from './expressionImages';
 import expressionName from './expressionName';
 import SuccessModal from '../modal/sucess'; // Certifique-se de que a importação está correta
-import SpeechText from '../components/speechText';
+import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import StatusGame from '../components/StatusGame';
 import Correct from '../modal/Animate';
@@ -113,11 +113,11 @@ export default function MemoryGame() {
     <View style={styles.container}>
       <Correct isVisible={animate} onAnimationFinish={() => resetGame()} />
       <StatusGame atual={current} total={2} />
-      <View style={{ flexDirection: 'row', marginTop: 60 }}>
         <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
+      <View style={styles.game}>
+      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
         <Title title='Jogo da Memória' />
       </View>
-      <View style={styles.game}>
         <View style={styles.grid}>
           {cards.map((card, index) => (
             <TouchableOpacity
@@ -155,7 +155,8 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
     paddingTop: 40,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backgroundStyle: {
     width: '100%',
@@ -170,8 +171,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    width: 80,
-    height: 80,
+    width: 120,
+    height: 120,
     margin: 10,
     backgroundColor: 'white',
     borderRadius: 5,
@@ -189,12 +190,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   image: {
-    width: 50,
-    height: 50,
-  },
-  imageBaralho: {
     width: 80,
     height: 80,
+  },
+  imageBaralho: {
+    width: 120,
+    height: 120,
     borderRadius: 5,
   },
 });

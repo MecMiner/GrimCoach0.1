@@ -6,7 +6,7 @@ import { Link, router } from 'expo-router';
 import expressionImages from './phases/expressionImages';
 import Title from './components/title';
 import { PersonData } from './components/types';
-import SpeechText from './components/speechText';
+import SpeechText from './components/SpeechText';
 import ButtonGame from './components/ButtonGame';
 
 
@@ -57,15 +57,14 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-        <View style={{flexDirection: 'row', paddingTop: 30}}>
           <SpeechText style={{}} text={'Selecione um perfil ou crie um'}/>
+        <View style={styles.game}>
+        <View style={{flexDirection: 'row', paddingBottom: 30}}>
           <Title title='Selecione um Perfil'/>
         </View>
-        <View style={styles.game}>
-
         <FlatList
             data={data}
-            style={{ maxHeight: 700 }}
+            style={{ maxHeight: 650 }}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator= {false}
             renderItem={({ item }) => (
@@ -84,9 +83,8 @@ export default function Home() {
                     <Text style={{color: 'purple'}}>Adicionar Perfil</Text>
             </TouchableOpacity>
           </Link>
-          <ButtonGame onPress={()=>{console.log('teste')}} text='olae' style={{backgroundColor: 'blue'}}/>
+{/*          <ButtonGame onPress={()=>{console.log('teste')}} text='olae' style={{backgroundColor: 'blue'}}/>*/}
         </View>
-      <StatusBar hidden />
     </View>
   );
 }

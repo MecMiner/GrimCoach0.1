@@ -3,7 +3,7 @@ import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackgroun
 import expressionImages from './expressionImages'; // Certifique-se de que a importação está correta
 import expressionName from './expressionName'; // Certifique-se de que a importação está correta
 import SuccessModal from '../modal/sucess';
-import SpeechText from '../components/speechText';
+import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Correct from '../modal/Animate';
@@ -75,13 +75,13 @@ export default function CompareExpressions() {
     <View style={styles.container}>
       <Correct isVisible={animated} onAnimationFinish={() => resetGame()}/>
       <StatusGame atual={current} total={5}/>
-      <View style={{ flexDirection: 'row', marginTop: 60 }}>
         <SpeechText style={{}} text={'Informe se a figuras são iguais ou diferentes'} />
-        <Title title='Compare as Expressões' />
-      </View>
 
       <View style={styles.game}>
-        <View style={{flexDirection: 'column', width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
+        <Title title='Compare as Expressões' />
+      </View>
+        <View style={{flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
           <View style={styles.viewImage}>
             <Image style={styles.image} source={expressionImages.facil[options]}/>
           </View>
@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
 
   game: {
     flex: 1,
-    paddingTop: 40,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   button: {

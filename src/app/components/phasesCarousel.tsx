@@ -13,34 +13,39 @@ interface Images {
 
 const images: Images[] = [
     {
-        title: 'Phase 1' , 
+        title: 'Escreva a Exprresão' , 
         uri: require('./../../assets/phases/phase1.png'),
         link:'/phases/escrevaExpressao'
     },
     {
-        title: 'Phase 2' , 
+        title: 'Selecione a expressão' , 
         uri: require('./../../assets/phases/phase2.png'),
         link:'/phases/selecioneExpressao'
     },
     {
-        title: 'Phase 3' , 
+        title: 'Combine as Expressao' , 
         uri: require('./../../assets/phases/phase3.png'),
         link:'/phases/ligueExpressao'
     },
     {
-        title: 'Phase 4' , 
+        title: 'Jogo da Memória' , 
         uri: require('./../../assets/phases/phase4.png'),
         link:'/phases/jogoDaMemoria'
     },
     {
-        title: 'Phase 5' , 
+        title: 'Encontre o Erro' , 
         uri: require('./../../assets/phases/phase5.png'),
-        link:'/phases/jogoDaMemoria'
+        link:'/phases/encontreOErro'
     },
     {
-        title: 'Phase 6' , 
+        title: 'Copare as Expressões' , 
         uri: require('./../../assets/phases/phase6.png'),
-        link:'/phases/jogoDaMemoria'
+        link:'/phases/compareExpressions'
+    },
+    {
+        title: 'Imite as Expressões' , 
+        uri: require('./../../assets/phases/phase6.png'),
+        link:'/phases/imiteAExpressao'
     },
 ]
 

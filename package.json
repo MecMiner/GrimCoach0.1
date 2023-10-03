@@ -26,7 +26,9 @@
     "react-native-uuid": "^2.0.1",
     "string-similarity": "^4.0.4",
     "react-native-web": "~0.19.6",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "expo-camera": "~13.4.4",
+    "expo-face-detector": "~12.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

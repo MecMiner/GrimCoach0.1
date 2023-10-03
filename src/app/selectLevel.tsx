@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Carousel from './components/phasesCarousel';
+import Carousel from './components/PhasesCarousel';
 import Title from './components/title';
 import { StatusBar } from 'expo-status-bar';
 import { PersonData, Token } from './components/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SpeechText from './components/speechText';
+import SpeechText from './components/SpeechText';
 import FabButton from './components/FabButton';
 import { router } from 'expo-router';
 
@@ -54,9 +54,9 @@ export default function SelectLevel() {
 
   return (
     <View style={styles.container}>
+      <SpeechText style={{}} text={'Selecione uma Fase'} />
       <View style={styles.game}>
         <View style={{ flexDirection: 'row', paddingBottom: 20 }}>
-          <SpeechText style={{}} text={'Selecione uma Fase'} />
           <Title title='Selecione uma Fase' />
         </View>
         <View >
