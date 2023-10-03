@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, ImageBackground, Text, SafeAreaView } from 'react-native';
-import expressionImages from './expressionImages';
-import expressionName from './expressionName';
+import expressionImages from '../config/expressionImages';
+import expressionName from '../config/expressionName';
 import SuccessModal from '../modal/sucess'; // Certifique-se de que a importação está correta
 import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import StatusGame from '../components/StatusGame';
 import Correct from '../modal/Animate';
+import colors from '../config/colors';
+import { StatusBar } from 'expo-status-bar';
 
 
 type Card = {
@@ -111,13 +113,12 @@ export default function MemoryGame() {
 
   return (
     <View style={styles.container}>
+        <Title title='Jogo da Memória' />
+        <StatusBar backgroundColor={colors.backGroundTitle} />
       <Correct isVisible={animate} onAnimationFinish={() => resetGame()} />
       <StatusGame atual={current} total={2} />
         <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
       <View style={styles.game}>
-      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
-        <Title title='Jogo da Memória' />
-      </View>
         <View style={styles.grid}>
           {cards.map((card, index) => (
             <TouchableOpacity
@@ -148,15 +149,14 @@ export default function MemoryGame() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
     alignItems: 'center',
   },
 
   game: {
     flex: 1,
-    paddingTop: 40,
+    marginTop: 50,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   backgroundStyle: {
     width: '100%',

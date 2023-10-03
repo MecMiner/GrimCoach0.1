@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
-import expressionImages from './expressionImages'; // Certifique-se de que a importação está correta
-import expressionName from './expressionName'; // Certifique-se de que a importação está correta
+import expressionImages from '../config/expressionImages';
+import expressionName from '../config/expressionName';
 import SuccessModal from '../modal/sucess';
 import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Correct from '../modal/Animate';
 import StatusGame from '../components/StatusGame';
+import { StatusBar } from 'expo-status-bar';
+import colors from '../config/colors';
 
 
 export default function CompareExpressions() {
@@ -19,7 +21,7 @@ export default function CompareExpressions() {
   const [current, setCurrent] = useState<number>(1);
 
 
-  
+
   useEffect(() => {
     const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
     const randomEmotion2 = expressionName[Math.floor(Math.random() * expressionName.length)];
@@ -31,9 +33,9 @@ export default function CompareExpressions() {
 
 
   const compare = (isTrue: boolean) => {
-    if (isTrue){
-      if (options === respost){
-        if (current < 5){
+    if (isTrue) {
+      if (options === respost) {
+        if (current < 5) {
           setAnimated(true)
         } else {
           setIsSuccessModalVisible(true)
@@ -42,8 +44,8 @@ export default function CompareExpressions() {
         setFeedback('Infelimente você errou essa')
       }
     } else {
-      if (options !== respost){
-        if (current < 5){
+      if (options !== respost) {
+        if (current < 5) {
           setAnimated(true)
         } else {
           setIsSuccessModalVisible(true)
@@ -73,31 +75,30 @@ export default function CompareExpressions() {
 
   return (
     <View style={styles.container}>
-      <Correct isVisible={animated} onAnimationFinish={() => resetGame()}/>
-      <StatusGame atual={current} total={5}/>
-        <SpeechText style={{}} text={'Informe se a figuras são iguais ou diferentes'} />
+      <Title title='Compare as Expressões' />
+      <Correct isVisible={animated} onAnimationFinish={() => resetGame()} />
+      <StatusGame atual={current} total={5} />
+      <SpeechText style={{}} text={'Informe se a figuras são iguais ou diferentes'} />
+      <StatusBar backgroundColor={colors.backGroundTitle} />
 
       <View style={styles.game}>
-      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
-        <Title title='Compare as Expressões' />
-      </View>
-        <View style={{flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
           <View style={styles.viewImage}>
-            <Image style={styles.image} source={expressionImages.facil[options]}/>
+            <Image style={styles.image} source={expressionImages.facil[options]} />
           </View>
-          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 40}}>
-            <TouchableOpacity style={[styles.viewCompare, {marginRight: 20}]} onPress={() => compare(true)}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 40 }}>
+            <TouchableOpacity style={[styles.viewCompare, { marginRight: 20 }]} onPress={() => compare(true)}>
               <MaterialCommunityIcons name="equal" size={60} color="black" />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.viewCompare, {marginLeft: 20}]}  onPress={() => compare(false)}>
+            <TouchableOpacity style={[styles.viewCompare, { marginLeft: 20 }]} onPress={() => compare(false)}>
               <MaterialCommunityIcons name="not-equal-variant" size={60} color="black" />
             </TouchableOpacity>
-           
+
           </View>
 
 
           <View style={styles.viewImage}>
-            <Image style={styles.image} source={expressionImages.facil[respost]}/>
+            <Image style={styles.image} source={expressionImages.facil[respost]} />
           </View>
 
         </View>
@@ -111,7 +112,7 @@ export default function CompareExpressions() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
     alignItems: 'center',
   },
 
@@ -141,13 +142,14 @@ const styles = StyleSheet.create({
     height: 150,
   },
 
-  viewCompare:{
+  viewCompare: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
     width: 120,
     height: 120,
     borderRadius: 60,
+    elevation: 5,
   },
   feedback: {
     marginTop: 20,

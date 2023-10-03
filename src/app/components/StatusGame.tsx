@@ -26,8 +26,6 @@ const StatusGame:React.FC<StatusGameProps> = ({total, atual}) => {
 
 const styles = StyleSheet.create({
     container: {
-        position: 'absolute',
-        top: 0,
         width: 200,
         backgroundColor: 'white',
         height: 40,
@@ -39,6 +37,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around', // Para espaçamento uniforme
         alignItems: 'center', // Alinhe os ícones verticalmente
         paddingHorizontal: 10,
+        elevation: 5,
     }
 })
 

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackground, TouchableWithoutFeedback } from 'react-native';
-import expressionImages from './expressionImages'; // Certifique-se de que a importação está correta
-import expressionName from './expressionName'; // Certifique-se de que a importação está correta
+import expressionImages from '../config/expressionImages'; // Certifique-se de que a importação está correta
+import expressionName from '../config/expressionName'; // Certifique-se de que a importação está correta
 import SuccessModal from '../modal/sucess';
 import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import StatusGame from '../components/StatusGame';
+import { StatusBar } from 'expo-status-bar';
+import colors from '../config/colors';
 
 export default function LigueExpressao() {
   const [respost, setRespost] = useState<string[]>([]);
@@ -75,7 +77,7 @@ export default function LigueExpressao() {
 
   };
 
-  const resetGame= () => {
+  const resetGame = () => {
     const randomIndex = Math.floor(Math.random() * expressionName.length);
     const randomEmotion = expressionName[randomIndex];
 
@@ -90,12 +92,11 @@ export default function LigueExpressao() {
 
   return (
     <View style={styles.container}>
-      <StatusGame atual={atual} total={3}/>
-        <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
+      <Title title='Combine' />
+      <StatusBar backgroundColor={colors.backGroundTitle} />
+      <StatusGame atual={atual} total={3} />
+      <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
       <View style={styles.game}>
-      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
-        <Title title='Combine' />
-      </View>
         <View style={styles.row}>
           <View style={styles.column}>
             {options.map((e, index) => (
@@ -137,7 +138,7 @@ export default function LigueExpressao() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
     alignItems: 'center',
   },
 
@@ -154,19 +155,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   column: {
-    flexDirection: 'column', 
-    alignItems: 'center', 
+    flexDirection: 'column',
+    alignItems: 'center',
     marginBottom: 10,
     margin: 30,
   },
   row: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginVertical: 5, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
   },
   image: {
-    width: 100, 
-    height: 100, 
+    width: 100,
+    height: 100,
   },
   text: {
     fontSize: 16,

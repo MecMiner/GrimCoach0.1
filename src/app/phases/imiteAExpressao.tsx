@@ -1,12 +1,19 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useRef, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Modal } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Modal } from 'react-native';
 import ButtonGame from '../components/ButtonGame';
 
 import { Entypo } from '@expo/vector-icons';
 import axios from 'axios';
+import colors from '../config/colors';
+import Title from '../components/title';
+import SpeechText from '../components/SpeechText';
+import { StatusBar } from 'expo-status-bar';
 
-export default function App() {
+
+const { width, height } = Dimensions.get('window');
+
+export default function ImiteAExpressao() {
   const [type, setType] = useState(CameraType.front);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [image, setImage] = useState(null);
@@ -14,23 +21,33 @@ export default function App() {
   const cameraRef = useRef(null);
 
   if (!permission) {
-    // Camera permissions are still loading
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet
+    //retorna se não tiver permissao
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Title title='Permissão' />
+        <SpeechText style={{}} text={'Você precissa concerder permissão para poder jogar essa fase'} />
+        <View style={styles.game}>
+          <View style={{flexDirection: 'column'}}>
+            <Text style={{ textAlign: 'center', marginBottom: 20, fontSize: 24, color: 'grey' }}>Por favor, conceda permissão para poder jogar essa fase</Text>
+            <ButtonGame 
+              style={{width: '100%', backgroundColor: 'white', borderRadius: 0, height: 50, borderWidth: 1}} 
+              text='Concerder Permissão' 
+              onPress={requestPermission}
+            />
+          </View>
+
+        </View>
       </View>
     );
   }
 
-  const analyzeImage = async () =>{
+  const analyzeImage = async () => {
     try {
-      if (!imageBase64){
+      if (!imageBase64) {
         alert('Por favor, selecione a imagem primeiro');
         return;
       }
@@ -39,7 +56,7 @@ export default function App() {
       const apiKey = 'AIzaSyCkMA9XocCebpM5JsG5-EHXesCK9FkvV8w';
       const apiURL = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`
 
-      const requestData= {
+      const requestData = {
         "requests": [
           {
             "image": {
@@ -74,9 +91,12 @@ export default function App() {
         }
 
         const data = await cameraRef.current.takePictureAsync(option);
-        setImage(data.uri)
-        setImageBase64(data.base64)
-        console.log(data.base64)
+
+        if (data) {
+          setImage(data.uri)
+          setImageBase64(data.base64)
+          console.log(data.base64)
+        }
       } catch (error) {
         console.log(error)
       }
@@ -85,31 +105,34 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {!image ?
-        <Modal transparent={false}>
-          <Camera
+        <Title title='Imite a expressão' />
+        <SpeechText style={{}} text={'Você deve tirar uma foto imitando a expressão'} />
+        <Modal
+          visible={!image}
+        >
+        <Camera
             style={styles.camera}
             type={type}
             ref={cameraRef}
           >
-          <TouchableOpacity onPress={takePicture} style={{marginVertical: 30}}>
+            <TouchableOpacity onPress={takePicture} style={{ position: 'absolute', bottom: 10 }}>
               <Entypo name="camera" size={40} color="black" />
-          </TouchableOpacity>
+            </TouchableOpacity>
           </Camera>
+          <StatusBar hidden/>
+
         </Modal>
 
-        :
-        <Image style={styles.picImage} source={{ uri: image }} />
-      }
+       {image && <Image style={styles.picImage} source={{ uri: image }} />}
       <View>
-        <TouchableOpacity onPress={image?  () => setImage(null): takePicture} style={{marginVertical: 30}}>
+        <TouchableOpacity onPress={image ? () => setImage(null) : takePicture} style={{ marginVertical: 30 }}>
           {image ?
-          <Entypo name="circle-with-cross" size={40} color="black" />
-          :
-          <Entypo name="camera" size={40} color="black" />}
+            <Entypo name="circle-with-cross" size={40} color="black" />
+            :
+            <Entypo name="camera" size={40} color="black" />}
         </TouchableOpacity>
 
-        <Button title='enviar imagem' onPress={analyzeImage}/>
+        <Button title='enviar imagem' onPress={analyzeImage} />
       </View>
     </View>
   );
@@ -118,17 +141,26 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.backGroundApp,
+  },
+
+  game: {
+    flex: 1,
+    justifyContent: 'center',
   },
   camera: {
-    flex: 1,
-    aspectRatio: 1728/2304,
+    width,
+    height,
+    aspectRatio: 1728 / 2304,
     borderRadius: 60,
+    position: 'absolute',
+    top: 0,
+    alignItems: 'center',
   },
   picImage: {
     width: 300,
-    aspectRatio: 1728/2304,
+    aspectRatio: 1728 / 2304,
     borderRadius: 60,
   },
   buttonContainer: {

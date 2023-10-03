@@ -3,11 +3,12 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView }
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Importe o AsyncStorage
 import { Link, router } from 'expo-router';
-import expressionImages from './phases/expressionImages';
+import expressionImages from './config/expressionImages';
 import Title from './components/title';
 import { PersonData } from './components/types';
 import SpeechText from './components/SpeechText';
 import ButtonGame from './components/ButtonGame';
+import colors from './config/colors';
 
 
 export default function Home() {
@@ -57,11 +58,10 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-          <SpeechText style={{}} text={'Selecione um perfil ou crie um'}/>
+        <StatusBar backgroundColor={colors.backGroundTitle}/>
+        <SpeechText style={{}} text={'Selecione um perfil ou crie um'}/>
+        <Title title='Selecione um Perfil'/>
         <View style={styles.game}>
-        <View style={{flexDirection: 'row', paddingBottom: 30}}>
-          <Title title='Selecione um Perfil'/>
-        </View>
         <FlatList
             data={data}
             style={{ maxHeight: 650 }}
@@ -72,7 +72,7 @@ export default function Home() {
                 <TouchableOpacity style={styles.avatarButton} onPress={() => login(item.id)}>
                   <Image source={expressionImages.avatar[item.avatar]} style={styles.avatarSelectionImage} />
                 </TouchableOpacity>
-                <Text style={{ fontSize: 18, color: 'gray', textAlign: 'center', marginBottom: 20 }}>
+                <Text style={{ fontSize: 24, color: 'gray', textAlign: 'center', marginBottom: 20 }}>
                   {item.name}
                 </Text>
               </View>
@@ -92,13 +92,13 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
     alignItems: 'center',
   },
 
   game: {
     flex: 1,
-    paddingTop: 40,
+    marginTop: 50,
     alignItems: 'center'
   },
 
@@ -115,15 +115,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
     alignItems: 'center',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 20,
     marginBottom: 5,
     elevation: 5,
   },
   avatarSelectionImage: {
-    width: 50,
-    height: 50,
+    width: 80,
+    height: 80,
     margin: 5,
   },
 

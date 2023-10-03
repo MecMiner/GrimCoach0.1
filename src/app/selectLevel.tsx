@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SpeechText from './components/SpeechText';
 import FabButton from './components/FabButton';
 import { router } from 'expo-router';
+import colors from './config/colors';
 
 
 export default function SelectLevel() {
@@ -54,11 +55,10 @@ export default function SelectLevel() {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor={colors.backGroundTitle} />
       <SpeechText style={{}} text={'Selecione uma Fase'} />
+      <Title title='Selecione uma Fase' />
       <View style={styles.game}>
-        <View style={{ flexDirection: 'row', paddingBottom: 20 }}>
-          <Title title='Selecione uma Fase' />
-        </View>
         <View >
           <Carousel />
         </View>
@@ -89,7 +89,6 @@ export default function SelectLevel() {
 
       </View>
       <FabButton back={() => { router.replace('/') }} style={styles.fabButton} avatar={user ? user.avatar : 'dragao'} />
-      <StatusBar />
     </View>
   );
 }
@@ -97,7 +96,7 @@ export default function SelectLevel() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
     alignItems: 'center',
   },
 
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 50
+    marginTop: 30,
   },
 
   difficut: {

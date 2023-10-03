@@ -1,6 +1,5 @@
 
-import { ImageSourcePropType, FlatList, View, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native';
-import Title from './title';
+import { ImageSourcePropType, FlatList, View, StyleSheet, Dimensions, Image, TouchableOpacity, Text } from 'react-native';
 import {Link} from 'expo-router';
 import { Href } from 'expo-router/build/link/href';
 
@@ -67,7 +66,7 @@ export default function Carousel () {
                     <Link href={`${item.link}`} asChild style={styles.initialPhase}>
                         <TouchableOpacity>
                             <Image style={styles.image} source={item.uri}/>
-                            <Title title={item.title}/>
+                            <Text style={styles.title}>{item.title}</Text>
                         </TouchableOpacity>
                     </Link>
 
@@ -105,5 +104,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: 'white',
         elevation: 5,
+    },
+    title:{
+        fontSize: 24,
+        textAlign: 'left',
+        padding: 20,
+        color: 'gray'
     }
 })

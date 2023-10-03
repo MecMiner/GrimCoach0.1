@@ -1,7 +1,7 @@
 import { Animated, Image, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import React, { useState } from 'react'
-import expressionImages from '../phases/expressionImages'
+import expressionImages from '../config/expressionImages'
 
 interface FabButtonProp {
     avatar: string,

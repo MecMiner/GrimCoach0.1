@@ -9,9 +9,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { ImageSourcePropType } from 'react-native';
 
 // Importe as imagens do arquivo expressionImages.tsx
-import expressionImages from './phases/expressionImages';
+import expressionImages from './config/expressionImages';
 import Title from './components/title';
 import SpeechText from './components/SpeechText';
+import { StatusBar } from 'expo-status-bar';
+import colors from './config/colors';
+import SelectedAvatar from './modal/SelectAvatar';
 
 export default function CreateProfile() {
   const [inputName, setInputName] = useState('');
@@ -95,12 +98,12 @@ export default function CreateProfile() {
       
         <SpeechText style={{}} text={'Crie um perfil, você tem que selecionar um avatar, inserir nome e idade'}/>
 
+          <Title title='Adicione um perfil'/>
 
         <View style={styles.game}>
-        <Title title='Adicione um perfil'/>
         <TouchableOpacity onPress={openAvatarSelection} style={styles.avatarButton}>
           {selectedAvatar ? (
-            <Image source={selectedAvatar} style={styles.avatarSelectionImage} />
+            <Image source={selectedAvatar} style={styles.avatarSelected} />
           ) : (
             <Ionicons name="ios-add" size={60} color="#888" />
           )}
@@ -135,42 +138,13 @@ export default function CreateProfile() {
           {feedback && <Text style={{color: 'red', position: 'absolute', bottom: 0}}>{feedback}</Text>}
         </View>
 
-      {/* Modal de seleção de avatar */}
-      <Modal
-        visible={isAvatarModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={closeAvatarSelection}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <ScrollView>
-              <View style={styles.avatarGrid}>
-                {Object.keys(expressionImages.avatar).map((avatarName, index) => {
-                  const isLastInRow = (index + 1) % 3 === 0;
-                  return (
-                    <TouchableOpacity
-                      key={avatarName}
-                      onPress={() => {
-                        setSelectedAvatar(expressionImages.avatar[avatarName]);
-                        setAvatarName(avatarName);
-                        closeAvatarSelection();
-                      }}
-                      style={styles.avatarGridItem}
-                    >
-                      <Image
-                        source={expressionImages.avatar[avatarName]}
-                        style={styles.avatarSelectionImage}
-                      />
-                      {isLastInRow && <View style={styles.lineBreak} />}
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      <SelectedAvatar 
+        isVisible={isAvatarModalVisible} 
+        onClose={() => setAvatarModalVisible(false)} 
+        setAvatar={setSelectedAvatar} 
+        setAvatarName={setAvatarName}
+        />
+      <StatusBar backgroundColor={colors.backGroundTitle}/>
     </View>
   );
 }
@@ -178,16 +152,16 @@ export default function CreateProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
     alignItems: 'center',
   },
 
 
   game: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
-    justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 50
+
   },
 
   backgroundStyle: {
@@ -199,10 +173,9 @@ const styles = StyleSheet.create({
   },
   input: {
     width: 300,
-    height: 40,
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 10,
     paddingHorizontal: 20,
     fontSize: 24,
     color: '#333',
@@ -229,45 +202,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
     alignItems: 'center',
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     borderRadius: 20,
     marginBottom: 20,
     elevation: 5,
     borderColor: '#ccc',
     borderWidth: 1,
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end', // Modal aparece na parte inferior da tela
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-  },
-  avatarGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  avatarGridItem: {
-    width: '30%', // 30% para que 3 avatares caibam em uma linha
-    margin: 5,
-    alignItems: 'center',
-  },
-  lineBreak: {
-    width: '100%', // Quebra de linha
-  },
-  avatarSelectionImage: {
-    width: 80,
-    height: 80,
+  avatarSelected: {
+    width: 100,
+    height: 100,
     margin: 5,
   },
   ageView:{
     borderWidth: 1,
-    borderRadius: 10,
     textAlign: 'left',
     backgroundColor: 'white',
     borderColor: '#ccc',

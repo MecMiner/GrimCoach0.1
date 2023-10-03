@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TextInput, StyleSheet, Text } from 'react-native';
-import expressionImages from './expressionImages';
-import expressionName from './expressionName';
+import expressionImages from '../config/expressionImages';
+import expressionName from '../config/expressionName';
 import stringSimilarity from 'string-similarity';
 import SuccessModal from '../modal/sucess';
 import { StatusBar } from 'expo-status-bar';
@@ -10,6 +10,7 @@ import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import StatusGame from '../components/StatusGame';
 import Correct from '../modal/Animate';
+import colors from '../config/colors';
 
 
 
@@ -94,12 +95,10 @@ export default function EscrevaExpressao() {
     <View style={styles.container}>
       <Correct isVisible={animated} onAnimationFinish={resetFase}/>
       <SpeechText style={{}} text={'Digite a expressão que a imagem passsa'} />
+      <Title title='Identifique a Expressão' />
       <StatusGame atual={current} total={5} />
       <View style={styles.game}>
-        <View style={{ flexDirection: 'row', marginBottom: 30 }}>
 
-          <Title title='Identifique a Expressão' />
-        </View>
         {expressionImages.facil[expression] && (
           <View style={styles.viewImage}>
             <Image
@@ -123,7 +122,6 @@ export default function EscrevaExpressao() {
 
 
         <SuccessModal isVisible={isSuccessModalVisible} onClose={closeSuccessModal} />
-        <StatusBar hidden />
 
       </View>
     </View>
@@ -134,7 +132,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
   },
 
   game: {

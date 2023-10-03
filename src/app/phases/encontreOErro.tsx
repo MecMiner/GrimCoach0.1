@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
-import expressionImages from './expressionImages';
-import expressionName from './expressionName';
+import expressionImages from '../config/expressionImages';
+import expressionName from '../config/expressionName';
 import SuccessModal from '../modal/sucess';
 import SpeechText from '../components/SpeechText';
 import Title from '../components/title';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Correct from '../modal/Animate';
 import StatusGame from '../components/StatusGame';
+import { StatusBar } from 'expo-status-bar';
+import colors from '../config/colors';
 
 
 export default function CompareExpressions() {
@@ -18,19 +20,6 @@ export default function CompareExpressions() {
   const [animated, setAnimated] = useState(false);
   const [current, setCurrent] = useState<number>(1);
 
-  const generateRandomOptions = (allEmotions: string[], correctEmotion: string, numOptions: number) => {
-    const options = [correctEmotion];
-
-    while (options.length < numOptions) {
-      const randomEmotion = allEmotions[Math.floor(Math.random() * allEmotions.length)];
-
-      if (!options.includes(randomEmotion)) {
-        options.push(randomEmotion);
-      }
-    }
-
-    return shuffleArray(options); // Embaralha as opções
-  };
 
   const shuffleArray = (array: string[]) => {
     const shuffledArray = array.slice();
@@ -100,14 +89,13 @@ export default function CompareExpressions() {
 
   return (
     <View style={styles.container}>
+        <Title title='Econtre o Impostor' />
+        <StatusBar backgroundColor={colors.backGroundTitle} />
       <Correct isVisible={animated} onAnimationFinish={() => resetGame()} />
       <SpeechText style={{}} text={'Encontre a expressão isolada'} />
       <StatusGame atual={current} total={5} />
 
       <View style={styles.game}>
-      <View style={{ flexDirection: 'row', marginBottom: 30 }}>
-        <Title title='Econtre o Impostor' />
-      </View>
         <View style={styles.grid}>
           {options.map((item, index) => (
             <TouchableOpacity
@@ -133,15 +121,14 @@ export default function CompareExpressions() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8EBFF',
+    backgroundColor: colors.backGroundApp,
     alignItems: 'center',
   },
 
   game: {
     flex: 1,
-    paddingTop: 40,
+    marginTop: 40,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   feedback: {
     marginTop: 20,
