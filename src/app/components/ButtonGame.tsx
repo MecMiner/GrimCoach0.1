@@ -5,11 +5,12 @@ interface ButtomGameProps {
     text: string,
     onPress: () => void,
     style: any,
+    disabled: boolean | null
 }
 
-const ButtonGame: React.FC<ButtomGameProps> = ({text, onPress, style}) => {
+const ButtonGame: React.FC<ButtomGameProps> = ({text, onPress, style, disabled}) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.button, style]}> 
+    <TouchableOpacity disabled={disabled? disabled : false} onPress={onPress} style={[styles.button, style]}> 
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   )
@@ -26,7 +27,6 @@ const styles = StyleSheet.create({
         borderRadius: 30,
     },
     text :{
-        padding: 10,
         fontSize: 20,
         fontWeight: 'bold',
     }

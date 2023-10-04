@@ -19,7 +19,7 @@ export default function EscrevaExpressao() {
   const [feedback, setFeedback] = useState<string>(''); //Inicializa feedeback
   const [expression, setExpression] = useState<string>(''); // Inicialize com uma emoção padrão
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState<boolean>(false); // Estado para controlar a visibilidade da modal de sucesso
-  const [current, setCurrent] = useState<number>(0); //Inicial parte da fase em que esta
+  const [current, setCurrent] = useState<number>(1); //Inicial parte da fase em que esta
   const [usedExpressions, setUsedExpressions] = useState<string[]>([]);
   const [animated, setAnimated] = useState<boolean>(false);
 
@@ -116,7 +116,7 @@ export default function EscrevaExpressao() {
           onChangeText={(text) => setInputEmotion(text)}
         />
 
-        <ButtonGame onPress={checkEmotion} style={styles.button} text='Corrigir' />
+        <ButtonGame disabled={false} onPress={checkEmotion} style={styles.button} text='Corrigir' />
 
         <Text style={styles.feedback}>{feedback}</Text>
 

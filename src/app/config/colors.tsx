@@ -9,7 +9,7 @@ interface Colors {
 
 const colors:Colors = {
     backGroundApp: '#C0FEFF',
-    backGroundTitle: '#97FDFF',
+    backGroundTitle: 'white',
     backGroundButton: '#FEFDFF',
     title: '#EB4511',
     button: 'purple'

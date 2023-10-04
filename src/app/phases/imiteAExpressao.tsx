@@ -1,6 +1,6 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useRef, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Modal } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Modal } from 'react-native';
 import ButtonGame from '../components/ButtonGame';
 
 import { Entypo } from '@expo/vector-icons';
@@ -10,6 +10,13 @@ import Title from '../components/title';
 import SpeechText from '../components/SpeechText';
 import { StatusBar } from 'expo-status-bar';
 
+interface Respost{
+  angerLikelihood: string | null,
+  joyLikelihood: string | null,
+  surpriseLikelihood: string | null,
+  sorrowLikelihood: string | null,
+}
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,6 +25,8 @@ export default function ImiteAExpressao() {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [image, setImage] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
+  const [openCamera, setOpenCamera] = useState(false);
+  const [respost, setRespost] = useState<Respost | null>();
   const cameraRef = useRef(null);
 
   if (!permission) {
@@ -31,11 +40,12 @@ export default function ImiteAExpressao() {
         <Title title='Permissão' />
         <SpeechText style={{}} text={'Você precissa concerder permissão para poder jogar essa fase'} />
         <View style={styles.game}>
-          <View style={{flexDirection: 'column'}}>
+          <View style={{ flexDirection: 'column' }}>
             <Text style={{ textAlign: 'center', marginBottom: 20, fontSize: 24, color: 'grey' }}>Por favor, conceda permissão para poder jogar essa fase</Text>
-            <ButtonGame 
-              style={{width: '100%', backgroundColor: 'white', borderRadius: 0, height: 50, borderWidth: 1}} 
-              text='Concerder Permissão' 
+            <ButtonGame
+              disabled={false}
+              style={{ width: '100%', backgroundColor: 'white', borderRadius: 0, height: 50, borderWidth: 1 }}
+              text='Concerder Permissão'
               onPress={requestPermission}
             />
           </View>
@@ -73,7 +83,12 @@ export default function ImiteAExpressao() {
       }
 
       const apiResponse = await axios.post(apiURL, requestData);
-      console.log(apiResponse.data.responses[0].faceAnnotations)
+      const parsedData = (apiResponse.data.responses[0].faceAnnotations);
+      if (parsedData) {
+        console.log(parsedData)
+        setRespost(parsedData[0]);
+      }
+      
     } catch (error) {
       console.error('Erro ao enviar imagem: ', error);
       alert('Erro ao enviar imagem, tente novamente')
@@ -82,7 +97,7 @@ export default function ImiteAExpressao() {
 
   const takePicture = async () => {
     console.log('teste')
-    if (cameraRef) {
+    if (cameraRef && cameraRef.current) {
       try {
         let option = {
           quality: 1,
@@ -93,9 +108,9 @@ export default function ImiteAExpressao() {
         const data = await cameraRef.current.takePictureAsync(option);
 
         if (data) {
+          setOpenCamera(false);
           setImage(data.uri)
           setImageBase64(data.base64)
-          console.log(data.base64)
         }
       } catch (error) {
         console.log(error)
@@ -103,36 +118,45 @@ export default function ImiteAExpressao() {
     }
   }
 
+
   return (
     <View style={styles.container}>
-        <Title title='Imite a expressão' />
-        <SpeechText style={{}} text={'Você deve tirar uma foto imitando a expressão'} />
-        <Modal
-          visible={!image}
-        >
+      <Title title='Imite a expressão' />
+      <SpeechText style={{}} text={'Você deve tirar uma foto imitando a expressão'} />
+      <Modal
+        visible={openCamera}
+      >
         <Camera
-            style={styles.camera}
-            type={type}
-            ref={cameraRef}
-          >
-            <TouchableOpacity onPress={takePicture} style={{ position: 'absolute', bottom: 10 }}>
-              <Entypo name="camera" size={40} color="black" />
-            </TouchableOpacity>
-          </Camera>
-          <StatusBar hidden/>
+          style={styles.camera}
+          type={type}
+          ref={cameraRef}
+        >
+          <TouchableOpacity onPress={takePicture} style={{ position: 'absolute', bottom: 50 }}>
+              <Entypo name="circle" size={70} color="black" />
+          </TouchableOpacity>
+        </Camera>
+        <StatusBar hidden />
 
-        </Modal>
+      </Modal>
+      <View style={styles.game}>
 
-       {image && <Image style={styles.picImage} source={{ uri: image }} />}
-      <View>
-        <TouchableOpacity onPress={image ? () => setImage(null) : takePicture} style={{ marginVertical: 30 }}>
+        <View style={styles.imagePic}>
           {image ?
-            <Entypo name="circle-with-cross" size={40} color="black" />
+            <Image style={styles.picImage} source={{ uri: image }} />
             :
-            <Entypo name="camera" size={40} color="black" />}
-        </TouchableOpacity>
 
-        <Button title='enviar imagem' onPress={analyzeImage} />
+            <TouchableOpacity onPress={() => setOpenCamera(true)}>
+              <Entypo name="camera" size={40} color="black" />
+            </TouchableOpacity>}
+        </View>
+        <View>
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+              <ButtonGame disabled={!image}  style={styles.button} onPress={() => setImage(null)} text='Refazer'/>
+              <ButtonGame disabled={!image}  style={styles.button} onPress={analyzeImage} text='Verificar'/>
+
+            </View>
+        </View>
+            <Text>{respost?.angerLikelihood}</Text>
       </View>
     </View>
   );
@@ -147,7 +171,8 @@ const styles = StyleSheet.create({
 
   game: {
     flex: 1,
-    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
   },
   camera: {
     width,
@@ -161,7 +186,17 @@ const styles = StyleSheet.create({
   picImage: {
     width: 300,
     aspectRatio: 1728 / 2304,
-    borderRadius: 60,
+    transform: [{ scaleX: -1 }],
+  },
+  imagePic: {
+    width: 350,
+    aspectRatio: 1728 / 2304,
+    borderRadius: 1,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: 'gray',
+
   },
   buttonContainer: {
     flex: 1,
@@ -170,9 +205,12 @@ const styles = StyleSheet.create({
     margin: 64,
   },
   button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    elevation: 5,
   },
   text: {
     fontSize: 24,

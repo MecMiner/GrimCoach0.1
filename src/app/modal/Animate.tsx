@@ -17,7 +17,7 @@ const Correct:React.FC<AnimatesProp> = ({isVisible, onAnimationFinish}) => {
     >
       <View style={styles.modalBackground}>
         <AnimatedLottieView
-          source={require('./../../assets/animacoes/sucess.json')}
+          source={require('./../../assets/animacoes/sucessConfet.json')}
           autoPlay
           loop={false}
           style={styles.lottieView}
