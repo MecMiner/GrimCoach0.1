@@ -30,7 +30,8 @@
     "react-native-screens": "~3.22.0",
     "react-native-uuid": "^2.0.1",
     "react-native-web": "~0.19.6",
-    "string-similarity": "^4.0.4"
+    "string-similarity": "^4.0.4",
+    "expo-screen-orientation": "~6.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

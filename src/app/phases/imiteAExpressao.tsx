@@ -251,7 +251,6 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
     borderRadius: 60,
-    position: 'absolute',
     top: 0,
     alignItems: 'center',
   },

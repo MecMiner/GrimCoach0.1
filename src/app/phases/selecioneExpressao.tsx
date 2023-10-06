@@ -121,6 +121,7 @@ export default function SelecioneExpressao() {
           <View style={styles.buttonColumn}>
             {options.slice(0, 2).map((option, index) => (
               <ButtonGame
+                disabled={false}
                 style={styles.button}
                 key={index} onPress={() => checkEmotion(option)}
                 text={option.toUpperCase()}
@@ -130,6 +131,7 @@ export default function SelecioneExpressao() {
           <View style={styles.buttonColumn}>
             {options.slice(2, 4).map((option, index) => (
               <ButtonGame
+                disabled={false}
                 style={styles.button}
                 key={index} onPress={() => checkEmotion(option)}
                 text={option.toUpperCase()}

@@ -43,7 +43,7 @@ export default function EscrevaExpressao() {
     const similarEmotionIndex = similarities.indexOf(maxSimilarity);
 
 
-    if (maxSimilarity >= 1) {
+    if (maxSimilarity == 1) {
       sucess();
     } else if (maxSimilarity > 0.5 && maxSimilarity < 1) {
       const similarEmotion = expressionName[similarEmotionIndex];
@@ -75,7 +75,6 @@ export default function EscrevaExpressao() {
   };
 
   const sucess = () => {
-    setCurrent(current + 1)
     if (current === 4) {
       setIsSuccessModalVisible(true)
     } else {
