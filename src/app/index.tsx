@@ -7,7 +7,6 @@ import expressionImages from './config/expressionImages';
 import Title from './components/title';
 import { PersonData } from './components/types';
 import SpeechText from './components/SpeechText';
-import ButtonGame from './components/ButtonGame';
 import colors from './config/colors';
 
 
@@ -21,7 +20,7 @@ export default function Home() {
 
       if (storedData){
         const parsedData = JSON.parse(storedData);
-        if (parsedData){
+        if (parsedData && parsedData.length > 0){
           console.log(parsedData);
           setData(parsedData);
         } else {
@@ -36,9 +35,8 @@ export default function Home() {
   };
   
   useEffect(() => {
-    console.log('teste');
     loadProfileData();
-  }, []); // Executa somente uma vez na montagem
+  }, []);
 
 
   const login = async (id: string) => {
@@ -46,8 +44,8 @@ export default function Home() {
       hash: id,
     }
     try {
+      //Seta id do usuário dentro de .hash do token
       await AsyncStorage.setItem('@grimcoach:token', JSON.stringify(user)).then((e) => {
-        console.log('User Logado');
         router.replace('/selectLevel')
       })
     } catch (error) {
@@ -59,7 +57,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
         <StatusBar backgroundColor={colors.backGroundTitle}/>
-        <SpeechText style={{}} text={'Selecione um perfil ou crie um'}/>
+        <SpeechText text={'Selecione um perfil ou crie um'}/>
         <Title title='Selecione um Perfil'/>
         <View style={styles.game}>
         <FlatList
@@ -83,7 +81,6 @@ export default function Home() {
                     <Text style={{color: 'purple'}}>Adicionar Perfil</Text>
             </TouchableOpacity>
           </Link>
-{/*          <ButtonGame onPress={()=>{console.log('teste')}} text='olae' style={{backgroundColor: 'blue'}}/>*/}
         </View>
     </View>
   );
@@ -137,9 +134,5 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 5,
     elevation: 5,
-  },
-
-  teste: {
-    backgroundColor: 'red',
   }
 });

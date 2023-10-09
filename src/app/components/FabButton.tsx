@@ -2,6 +2,7 @@ import { Animated, Image, StyleSheet, TouchableWithoutFeedback, View } from 'rea
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import React, { useState } from 'react'
 import expressionImages from '../config/expressionImages'
+import { Link, router } from 'expo-router';
 
 interface FabButtonProp {
     avatar: string,
@@ -67,11 +68,13 @@ const FabButton: React.FC<FabButtonProp> = ({ avatar, style, back }) => {
                         <Octicons name="arrow-switch" size={30} color="purple" />
                     </Animated.View>
                 </TouchableWithoutFeedback>
+                <Link href={'/configProfile'} asChild>
                 <TouchableWithoutFeedback>
                     <Animated.View style={[styles.avatar, styles.menu, settigsStyle]}>
                         <Ionicons name="md-settings" size={30} color="purple" />
                     </Animated.View>
                 </TouchableWithoutFeedback>
+                </Link>
             </View>
         </View>
     )

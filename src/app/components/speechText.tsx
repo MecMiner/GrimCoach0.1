@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 interface SpeechProps {
     text: string;
-    style : any
+    style? : any
 }
 
 export default function SpeechText({ text, style }: SpeechProps) {
