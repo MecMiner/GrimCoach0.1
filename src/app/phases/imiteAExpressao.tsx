@@ -205,9 +205,10 @@ export default function ImiteAExpressao() {
           type={CameraType.front}
           ref={cameraRef}
         >
-          <TouchableOpacity onPress={takePicture} style={{ position: 'absolute', bottom: 50 }}>
-            <Entypo name="circle" size={70} color="black" />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={takePicture} style={{ position: 'absolute', bottom: 50 }}>
+              <Entypo name="circle" size={70} color="black" />
+            </TouchableOpacity>
+
         </Camera>
         <StatusBar hidden />
 
