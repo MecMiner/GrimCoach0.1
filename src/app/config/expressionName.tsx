@@ -1,13 +1,8 @@
 const expressionName: string[] = [
-    'alegre',
-    'apaixonado',
-    'assustado',
-    'chateado',
-    'confuso',
-    'emocionado',
-    'pensativo',
+    'feliz',
+    'medo',
+    'serio',
     'raiva',
-    'sono',
     'triste',
   ];
 

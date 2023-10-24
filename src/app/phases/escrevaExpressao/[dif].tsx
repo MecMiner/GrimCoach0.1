@@ -1,53 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TextInput, StyleSheet, Text } from 'react-native';
-import expressionImages from '../config/expressionImages';
-import expressionName from '../config/expressionName';
+import expressionImages from '../../config/expressionImages';
+import expressionName from '../../config/expressionName';
 import stringSimilarity from 'string-similarity';
-import SuccessModal from '../modal/sucess';
+import SuccessModal from '../../modal/sucess';
 import { StatusBar } from 'expo-status-bar';
-import ButtonGame from '../components/ButtonGame';
-import SpeechText from '../components/SpeechText';
-import Title from '../components/title';
-import StatusGame from '../components/StatusGame';
-import Correct from '../modal/Animate';
-import colors from '../config/colors';
+import ButtonGame from '../../components/ButtonGame';
+import SpeechText from '../../components/SpeechText';
+import Title from '../../components/title';
+import StatusGame from '../../components/StatusGame';
+import Correct from '../../modal/Animate';
+import colors from '../../config/colors';
+import { shuffleArray } from '../../utils/utils';
+import { useLocalSearchParams } from 'expo-router';
 
+type Dificuldade = 'facil' | 'medio' | 'dificil'
 
-
-export default function EscrevaExpressao() {
+export default function EscrevaExpressao({}) {
   const [inputEmotion, setInputEmotion] = useState<string>(''); //Inicializar Input de Emoçao
   const [feedback, setFeedback] = useState<string>(''); //Inicializa feedeback
-  const [expression, setExpression] = useState<string>(''); // Inicialize com uma emoção padrão
+  const [expression, setExpression] = useState<string[]>([]); // Inicialize com uma emoção padrão
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState<boolean>(false); // Estado para controlar a visibilidade da modal de sucesso
-  const [current, setCurrent] = useState<number>(1); //Inicial parte da fase em que esta
-  const [usedExpressions, setUsedExpressions] = useState<string[]>([]);
+  const [current, setCurrent] = useState<number>(0); //Inicial parte da fase em que esta
   const [animated, setAnimated] = useState<boolean>(false);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const { dif } = useLocalSearchParams();
+
+  const diff = Array.isArray(dif) ? dif[0] : dif;
+
+  if (diff === 'facil' || diff ==='medio' || diff === 'dificil'){
+    setDificuldade(diff);
+  }
 
 
   useEffect(() => {
-    // Escolhe aleatoriamente uma emoção
-    const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
+    // Embaralha as emoções
+    const randomEmotion = shuffleArray(expressionName)
 
-    // Define a imagem aleatória com base na emoção
-    setExpression(randomEmotion.toLowerCase());
+    // Define um array de emoções aleatórias
+    setExpression(randomEmotion);
   }, []);
 
   const checkEmotion = () => {
     const userEmotion = inputEmotion.toLowerCase();
 
     // Verifica se a resposta do usuario esta correta ou próxima
-    const similarities = expressionName.map((emotion) =>
-      stringSimilarity.compareTwoStrings(emotion, userEmotion)
-    );
-    const maxSimilarity = Math.max(...similarities);
-    const similarEmotionIndex = similarities.indexOf(maxSimilarity);
+    const similarities =   stringSimilarity.compareTwoStrings(expression[current], userEmotion)
 
 
-    if (maxSimilarity == 1) {
+
+    if (similarities == 1) {
       sucess();
-    } else if (maxSimilarity > 0.5 && maxSimilarity < 1) {
-      const similarEmotion = expressionName[similarEmotionIndex];
-      setFeedback(`Você está perto! A emoção é ${similarEmotion}.`);
+    } else if (similarities > 0.5 && similarities < 1) {
+      setFeedback(`Você está perto! A emoção é ${expression[current]}.`);
     } else {
       setFeedback('Tente novamente, não foi possível identificar a emoção.');
     }
@@ -58,19 +63,6 @@ export default function EscrevaExpressao() {
     setAnimated(false);
     setInputEmotion(''); // Limpa o campo de entrada de emoção
     setFeedback(''); // Limpa o feedback
-  
-    if (usedExpressions.length < expressionName.length) {
-      let randomEmotion;
-      do {
-        randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
-      } while (usedExpressions.includes(randomEmotion));
-      
-      setExpression(randomEmotion.toLowerCase()); // Define a nova emoção
-      setUsedExpressions([...usedExpressions, randomEmotion]);
-    } else {
-      // Todas as expressões foram usadas, você pode reiniciar o jogo ou tomar outra ação aqui
-    }
-  
     setCurrent(current + 1);
   };
 
@@ -95,13 +87,13 @@ export default function EscrevaExpressao() {
       <Correct isVisible={animated} onAnimationFinish={resetFase}/>
       <SpeechText style={{}} text={'Digite a expressão que a imagem passsa'} />
       <Title title='Identifique a Expressão' />
-      <StatusGame atual={current} total={5} />
+      <StatusGame atual={current+1} total={5} />
       <View style={styles.game}>
-
-        {expressionImages.facil[expression] && (
+        
+        {expressionImages[dificuldade][expression[current]] && (
           <View style={styles.viewImage}>
             <Image
-              source={expressionImages.facil[expression]}
+              source={expressionImages[dificuldade][expression[current]]}
               style={styles.image}
             />
           </View>

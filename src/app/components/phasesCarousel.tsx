@@ -50,7 +50,11 @@ const images: Images[] = [
 
 const {width, height} = Dimensions.get('window');
 
-export default function Carousel () {
+interface CarouselProps {
+    dif: string;
+  }
+
+export default function Carousel ({dif} : CarouselProps) {
     return (
         <View style={styles.container}>
             <FlatList
@@ -63,7 +67,7 @@ export default function Carousel () {
             renderItem={({item}) => {
                 return (
                 <View style={styles.imageContainer}>
-                    <Link href={`${item.link}`} asChild style={styles.initialPhase}>
+                    <Link href={`${item.link}/${dif}`} asChild style={styles.initialPhase}>
                         <TouchableOpacity>
                             <Image style={styles.image} source={item.uri}/>
                             <Text style={styles.title}>{item.title}</Text>

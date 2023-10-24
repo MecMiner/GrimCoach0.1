@@ -60,7 +60,7 @@ export default function SelectLevel() {
       <Title title='Selecione uma Fase' />
       <View style={styles.game}>
         <View >
-          <Carousel />
+          <Carousel dif={dificuldade} />
         </View>
 
         <View style={styles.difficut}>

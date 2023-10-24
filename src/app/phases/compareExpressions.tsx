@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
 import expressionImages from '../config/expressionImages';
 import expressionName from '../config/expressionName';
 import SuccessModal from '../modal/sucess';

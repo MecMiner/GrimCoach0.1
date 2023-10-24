@@ -2,6 +2,8 @@ import { ImageSourcePropType } from 'react-native';
 
 interface ExpressionImages {
   facil: Record<string, ImageSourcePropType>;
+  medio: Record<string, ImageSourcePropType>;
+  dificil: Record<string, ImageSourcePropType>;
   avatar: Record<string, ImageSourcePropType>;
   baralho: ImageSourcePropType;
 }
@@ -9,16 +11,27 @@ interface ExpressionImages {
 
 const expressionImages: ExpressionImages = {
     facil: {
-        alegre: require('./../../assets/emocoes/facil/Alegre.png'),
-        apaixonado: require('./../../assets/emocoes/facil/Apaixonado.png'),
-        assustado: require('./../../assets/emocoes/facil/Assustado.png'),
-        chateado: require('./../../assets/emocoes/facil/Chateado.png'),
-        confuso: require('./../../assets/emocoes/facil/Confuso.png'),
-        emocionado: require('./../../assets/emocoes/facil/Emocionado.png'),
-        pensativo: require('./../../assets/emocoes/facil/Pensativo.png'),
+        feliz: require('./../../assets/emocoes/facil/Alegre.png'),
+        medo: require('./../../assets/emocoes/facil/Assustado.png'),
+        serio: require('./../../assets/emocoes/facil/Pensativo.png'),
         raiva: require('./../../assets/emocoes/facil/Raiva.png'),
-        sono: require('./../../assets/emocoes/facil/Sono.png'),
         triste: require('./../../assets/emocoes/facil/Triste.png'),
+    },
+
+    medio: {
+      feliz: require('./../../assets/emocoes/facil/Alegre.png'),
+      medo: require('./../../assets/emocoes/facil/Assustado.png'),
+      serio: require('./../../assets/emocoes/facil/Pensativo.png'),
+      raiva: require('./../../assets/emocoes/facil/Raiva.png'),
+      triste: require('./../../assets/emocoes/facil/Triste.png'),
+    },
+
+    dificil: {
+      feliz: require('./../../assets/emocoes/facil/Alegre.png'),
+      medo: require('./../../assets/emocoes/facil/Assustado.png'),
+      serio: require('./../../assets/emocoes/facil/Pensativo.png'),
+      raiva: require('./../../assets/emocoes/facil/Raiva.png'),
+      triste: require('./../../assets/emocoes/facil/Triste.png'),
     },
 
     avatar: {
