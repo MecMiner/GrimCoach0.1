@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
-import expressionImages from '../config/expressionImages';
-import expressionName from '../config/expressionName';
-import SuccessModal from '../modal/sucess';
-import SpeechText from '../components/SpeechText';
-import Title from '../components/title';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Correct from '../modal/Animate';
-import StatusGame from '../components/StatusGame';
+import expressionImages from '../../config/expressionImages';
+import expressionName from '../../config/expressionName';
+import SuccessModal from '../../modal/sucess';
+import SpeechText from '../../components/SpeechText';
+import Title from '../../components/title';
+import Correct from '../../modal/Animate';
+import StatusGame from '../../components/StatusGame';
 import { StatusBar } from 'expo-status-bar';
-import colors from '../config/colors';
+import colors from '../../config/colors';
+import { useLocalSearchParams } from 'expo-router';
+import { Dificuldade, shuffleArray } from '../../utils/utils';
 
 
 export default function CompareExpressions() {
@@ -19,16 +20,18 @@ export default function CompareExpressions() {
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // Estado para controlar a visibilidade da modal de sucesso
   const [animated, setAnimated] = useState(false);
   const [current, setCurrent] = useState<number>(1);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
 
+  const { dif } = useLocalSearchParams();
 
-  const shuffleArray = (array: string[]) => {
-    const shuffledArray = array.slice();
-    for (let i = shuffledArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  const diff = Array.isArray(dif) ? dif[0] : dif;
+
+  useEffect(() => {
+    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
+      setDificuldade(diff);
     }
-    return shuffledArray;
-  };
+  }, [diff]);
+
 
 
   useEffect(() => {
@@ -104,7 +107,7 @@ export default function CompareExpressions() {
               onPress={() => compare(index)}
               activeOpacity={0.7}
             >
-              <Image source={expressionImages.facil[item]} style={styles.image} />
+              <Image source={expressionImages[dificuldade][item]} style={styles.image} />
 
             </TouchableOpacity>
           ))}

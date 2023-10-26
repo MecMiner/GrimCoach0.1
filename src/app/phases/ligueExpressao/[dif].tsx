@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackground, TouchableWithoutFeedback } from 'react-native';
-import expressionImages from '../config/expressionImages'; // Certifique-se de que a importação está correta
-import expressionName from '../config/expressionName'; // Certifique-se de que a importação está correta
-import SuccessModal from '../modal/sucess';
-import SpeechText from '../components/SpeechText';
-import Title from '../components/title';
-import StatusGame from '../components/StatusGame';
+import expressionImages from '../../config/expressionImages'; // Certifique-se de que a importação está correta
+import expressionName from '../../config/expressionName'; // Certifique-se de que a importação está correta
+import SuccessModal from '../../modal/sucess';
+import SpeechText from '../../components/SpeechText';
+import Title from '../../components/title';
+import StatusGame from '../../components/StatusGame';
 import { StatusBar } from 'expo-status-bar';
-import colors from '../config/colors';
-import { generateRandomOptions, shuffleArray } from '../utils/utils';
+import colors from '../../config/colors';
+import { Dificuldade, generateRandomOptions, shuffleArray } from '../../utils/utils';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function LigueExpressao() {
   const [respost, setRespost] = useState<string[]>([]);
@@ -18,6 +19,17 @@ export default function LigueExpressao() {
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // Estado para controlar a visibilidade da modal de sucesso
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [atual, setAtual] = useState<number>(1);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+
+  const { dif } = useLocalSearchParams();
+
+  const diff = Array.isArray(dif) ? dif[0] : dif;
+
+  useEffect(() => {
+    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
+      setDificuldade(diff);
+    }
+  }, [diff]);
 
   useEffect(() => {
     // Escolhe aleatoriamente a emoção correta
@@ -84,10 +96,10 @@ export default function LigueExpressao() {
             {options.map((e, index) => (
               <View key={index} style={{ marginBottom: 10 }}>
                 {/* Exibir as imagens */}
-                {expressionImages.facil[e] && (
+                {expressionImages[dificuldade][e] && (
                   <TouchableOpacity style={[styles.boxOption, selectedImage === e && styles.optionSelected]} onPress={() => setSelectedImage(e)}>
                     <Image
-                      source={expressionImages.facil[e]}
+                      source={expressionImages[dificuldade][e]}
                       style={styles.image}
                       resizeMode="contain"
                     />

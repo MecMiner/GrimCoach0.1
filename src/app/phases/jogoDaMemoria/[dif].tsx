@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, ImageBackground, Text, SafeAreaView } from 'react-native';
-import expressionImages from '../config/expressionImages';
-import expressionName from '../config/expressionName';
-import SuccessModal from '../modal/sucess'; // Certifique-se de que a importação está correta
-import SpeechText from '../components/SpeechText';
-import Title from '../components/title';
-import StatusGame from '../components/StatusGame';
-import Correct from '../modal/Animate';
-import colors from '../config/colors';
+import expressionImages from '../../config/expressionImages';
+import expressionName from '../../config/expressionName';
+import SuccessModal from '../../modal/sucess'; // Certifique-se de que a importação está correta
+import SpeechText from '../../components/SpeechText';
+import Title from '../../components/title';
+import StatusGame from '../../components/StatusGame';
+import Correct from '../../modal/Animate';
+import colors from '../../config/colors';
 import { StatusBar } from 'expo-status-bar';
+import { Dificuldade } from '../../utils/utils';
+import { useLocalSearchParams } from 'expo-router';
 
 
 type Card = {
@@ -26,6 +28,17 @@ export default function MemoryGame() {
   const [current, setCurrent] = useState<number>(1);
   const [animate, setAnimate] = useState(false);
   const [areCardsVisible, setAreCardsVisible] = useState(true);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+
+  const { dif } = useLocalSearchParams();
+
+  const diff = Array.isArray(dif) ? dif[0] : dif;
+
+  useEffect(() => {
+    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
+      setDificuldade(diff);
+    }
+  }, [diff]);
 
 
   useEffect(() => {
@@ -132,7 +145,7 @@ export default function MemoryGame() {
               activeOpacity={0.7}
             >
               {(isCardFlipped(index) || isCardMatched(card.value) || areCardsVisible) ? (
-                <Image source={expressionImages.facil[card.value]} style={styles.image} />
+                <Image source={expressionImages[dificuldade][card.value]} style={styles.image} />
               ) : (
                 <Image source={expressionImages.baralho} style={styles.imageBaralho} />
               )}
