@@ -21,3 +21,4 @@ while (options.length < numOptions) {
 return shuffleArray(options); // Embaralha as opções
 };
 
+export type Dificuldade = 'facil' | 'medio' | 'dificil'

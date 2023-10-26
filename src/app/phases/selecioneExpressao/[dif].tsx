@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, Text, ImageBackground } from 'react-native';
-import expressionImages from '../config/expressionImages'; // Certifique-se de que a importação está correta
-import expressionName from '../config/expressionName'; // Certifique-se de que a importação está correta
-import SuccessModal from '../modal/sucess';
-import StatusGame from '../components/StatusGame';
-import SpeechText from '../components/SpeechText';
-import Title from '../components/title';
+import expressionImages from '../../config/expressionImages'; // Certifique-se de que a importação está correta
+import expressionName from '../../config/expressionName'; // Certifique-se de que a importação está correta
+import SuccessModal from '../../modal/sucess';
+import StatusGame from '../../components/StatusGame';
+import SpeechText from '../../components/SpeechText';
+import Title from '../../components/title';
 import { StatusBar } from 'expo-status-bar';
-import ButtonGame from '../components/ButtonGame';
-import Correct from '../modal/Animate';
-import colors from '../config/colors';
+import ButtonGame from '../../components/ButtonGame';
+import Correct from '../../modal/Animate';
+import colors from '../../config/colors';
+import { useLocalSearchParams } from 'expo-router';
+import { Dificuldade } from '../../utils/utils';
 
 
 export default function SelecioneExpressao() {
@@ -19,6 +21,17 @@ export default function SelecioneExpressao() {
   const [options, setOptions] = useState<string[]>([]); 
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
   const [animate, setAnimate] = useState(false);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+
+  const { dif } = useLocalSearchParams();
+
+  const diff = Array.isArray(dif) ? dif[0] : dif;
+
+  useEffect(() => {
+    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
+      setDificuldade(diff);
+    }
+  }, [diff]);
 
   useEffect(() => {
     // Escolhe aleatoriamente a emoção correta
@@ -107,10 +120,10 @@ export default function SelecioneExpressao() {
 
       <View style={styles.game}>
 
-        {expressionImages.facil[correctEmotion] && (
+        {expressionImages[dificuldade][correctEmotion] && (
           <View style={styles.viewImage}>
             <Image
-              source={expressionImages.facil[correctEmotion]}
+              source={expressionImages[dificuldade][correctEmotion]}
               style={styles.image}
             />
           </View>

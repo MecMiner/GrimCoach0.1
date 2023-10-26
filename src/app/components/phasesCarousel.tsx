@@ -2,6 +2,7 @@
 import { ImageSourcePropType, FlatList, View, StyleSheet, Dimensions, Image, TouchableOpacity, Text } from 'react-native';
 import {Link} from 'expo-router';
 import { Href } from 'expo-router/build/link/href';
+import { Dificuldade } from '../utils/utils';
 
 interface Images {
     title: string,
@@ -12,38 +13,39 @@ interface Images {
 
 const images: Images[] = [
     {
+        title: 'Copare as Expressões' , 
+        uri: require('./../../assets/phases/compareAExpressao.png'),
+        link:'/phases/compareExpressions'
+    },
+    {
         title: 'Escreva a Exprresão' , 
-        uri: require('./../../assets/phases/phase1.png'),
+        uri: require('./../../assets/phases/escrevaAExpressao.png'),
         link:'/phases/escrevaExpressao'
     },
     {
         title: 'Selecione a expressão' , 
-        uri: require('./../../assets/phases/phase2.png'),
+        uri: require('./../../assets/phases/selecioneAExpressao.png'),
         link:'/phases/selecioneExpressao'
     },
     {
         title: 'Combine as Expressao' , 
-        uri: require('./../../assets/phases/phase3.png'),
+        uri: require('./../../assets/phases/combineAExpressao.png'),
         link:'/phases/ligueExpressao'
     },
     {
         title: 'Jogo da Memória' , 
-        uri: require('./../../assets/phases/phase4.png'),
+        uri: require('./../../assets/phases/jogoDaMemoria.png'),
         link:'/phases/jogoDaMemoria'
     },
     {
         title: 'Encontre o Erro' , 
-        uri: require('./../../assets/phases/phase5.png'),
+        uri: require('./../../assets/phases/encontreOErro.png'),
         link:'/phases/encontreOErro'
     },
-    {
-        title: 'Copare as Expressões' , 
-        uri: require('./../../assets/phases/phase6.png'),
-        link:'/phases/compareExpressions'
-    },
+
     {
         title: 'Imite as Expressões' , 
-        uri: require('./../../assets/phases/phase6.png'),
+        uri: require('./../../assets/phases/imiteAExpressao.png'),
         link:'/phases/imiteAExpressao'
     },
 ]
@@ -51,7 +53,7 @@ const images: Images[] = [
 const {width, height} = Dimensions.get('window');
 
 interface CarouselProps {
-    dif: string;
+    dif: Dificuldade;
   }
 
 export default function Carousel ({dif} : CarouselProps) {

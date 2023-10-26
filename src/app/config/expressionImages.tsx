@@ -11,27 +11,30 @@ interface ExpressionImages {
 
 const expressionImages: ExpressionImages = {
     facil: {
-        feliz: require('./../../assets/emocoes/facil/Alegre.png'),
-        medo: require('./../../assets/emocoes/facil/Assustado.png'),
-        serio: require('./../../assets/emocoes/facil/Pensativo.png'),
-        raiva: require('./../../assets/emocoes/facil/Raiva.png'),
-        triste: require('./../../assets/emocoes/facil/Triste.png'),
+        feliz: require('./../../assets/emocoes/facil/felicidade.png'),
+        medo: require('./../../assets/emocoes/facil/medo.png'),
+        serio: require('./../../assets/emocoes/facil/seriedade.png'),
+        raiva: require('./../../assets/emocoes/facil/raiva.png'),
+        triste: require('./../../assets/emocoes/facil/tristeza.png'),
+        surpreso: require('./../../assets/emocoes/facil/surpresa.png')
     },
 
     medio: {
-      feliz: require('./../../assets/emocoes/facil/Alegre.png'),
-      medo: require('./../../assets/emocoes/facil/Assustado.png'),
-      serio: require('./../../assets/emocoes/facil/Pensativo.png'),
-      raiva: require('./../../assets/emocoes/facil/Raiva.png'),
-      triste: require('./../../assets/emocoes/facil/Triste.png'),
+      feliz: require('./../../assets/emocoes/facil/felicidade.png'),
+      medo: require('./../../assets/emocoes/facil/medo.png'),
+      serio: require('./../../assets/emocoes/facil/seriedade.png'),
+      raiva: require('./../../assets/emocoes/facil/raiva.png'),
+      triste: require('./../../assets/emocoes/facil/tristeza.png'),
+      surpreso: require('./../../assets/emocoes/facil/surpresa.png')
     },
 
     dificil: {
-      feliz: require('./../../assets/emocoes/facil/Alegre.png'),
-      medo: require('./../../assets/emocoes/facil/Assustado.png'),
-      serio: require('./../../assets/emocoes/facil/Pensativo.png'),
-      raiva: require('./../../assets/emocoes/facil/Raiva.png'),
-      triste: require('./../../assets/emocoes/facil/Triste.png'),
+      feliz: require('./../../assets/emocoes/facil/felicidade.png'),
+      medo: require('./../../assets/emocoes/facil/medo.png'),
+      serio: require('./../../assets/emocoes/facil/seriedade.png'),
+      raiva: require('./../../assets/emocoes/facil/raiva.png'),
+      triste: require('./../../assets/emocoes/facil/tristeza.png'),
+      surpreso: require('./../../assets/emocoes/facil/surpresa.png')
     },
 
     avatar: {

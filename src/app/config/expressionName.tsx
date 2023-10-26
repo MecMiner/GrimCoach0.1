@@ -4,6 +4,7 @@ const expressionName: string[] = [
     'serio',
     'raiva',
     'triste',
+    'assustado',
   ];
 
 export default expressionName;

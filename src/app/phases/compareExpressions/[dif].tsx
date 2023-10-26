@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
-import expressionImages from '../config/expressionImages';
-import expressionName from '../config/expressionName';
-import SuccessModal from '../modal/sucess';
-import SpeechText from '../components/SpeechText';
-import Title from '../components/title';
+import expressionImages from '../../config/expressionImages';
+import expressionName from '../../config/expressionName';
+import SuccessModal from '../../modal/sucess';
+import SpeechText from '../../components/SpeechText';
+import Title from '../../components/title';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Correct from '../modal/Animate';
-import StatusGame from '../components/StatusGame';
+import Correct from '../../modal/Animate';
+import StatusGame from '../../components/StatusGame';
 import { StatusBar } from 'expo-status-bar';
-import colors from '../config/colors';
+import colors from '../../config/colors';
+import { useLocalSearchParams } from 'expo-router';
+import { Dificuldade } from '../../utils/utils';
 
 
 export default function CompareExpressions() {
@@ -19,6 +21,17 @@ export default function CompareExpressions() {
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // Estado para controlar a visibilidade da modal de sucesso
   const [animated, setAnimated] = useState(false);
   const [current, setCurrent] = useState<number>(1);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+
+  const { dif } = useLocalSearchParams();
+
+  const diff = Array.isArray(dif) ? dif[0] : dif;
+
+  useEffect(() => {
+    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
+      setDificuldade(diff);
+    }
+  }, [diff]);
 
 
 
@@ -83,23 +96,28 @@ export default function CompareExpressions() {
 
       <View style={styles.game}>
         <View style={{ flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{flexDirection : 'row'}}>
           <View style={styles.viewImage}>
-            <Image style={styles.image} source={expressionImages.facil[options]} />
+            <Image style={styles.image} source={expressionImages[dificuldade][options]} />
+          </View>
+
+          <View style={styles.viewImage}>
+            <Image style={styles.image} source={expressionImages[dificuldade][respost]} />
+          </View>
+
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 40 }}>
             <TouchableOpacity style={[styles.viewCompare, { marginRight: 20 }]} onPress={() => compare(true)}>
               <MaterialCommunityIcons name="equal" size={60} color="black" />
+              <Text>Igual</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.viewCompare, { marginLeft: 20 }]} onPress={() => compare(false)}>
               <MaterialCommunityIcons name="not-equal-variant" size={60} color="black" />
+              <Text>Diferente</Text>
             </TouchableOpacity>
 
           </View>
 
-
-          <View style={styles.viewImage}>
-            <Image style={styles.image} source={expressionImages.facil[respost]} />
-          </View>
 
         </View>
         <Text style={styles.feedback}>{feedback}</Text>

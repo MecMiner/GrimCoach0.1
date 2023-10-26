@@ -11,10 +11,10 @@ import Title from '../../components/title';
 import StatusGame from '../../components/StatusGame';
 import Correct from '../../modal/Animate';
 import colors from '../../config/colors';
-import { shuffleArray } from '../../utils/utils';
+import { Dificuldade, shuffleArray } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
 
-type Dificuldade = 'facil' | 'medio' | 'dificil'
+
 
 export default function EscrevaExpressao({}) {
   const [inputEmotion, setInputEmotion] = useState<string>(''); //Inicializar Input de Emoçao
@@ -28,9 +28,11 @@ export default function EscrevaExpressao({}) {
 
   const diff = Array.isArray(dif) ? dif[0] : dif;
 
-  if (diff === 'facil' || diff ==='medio' || diff === 'dificil'){
-    setDificuldade(diff);
-  }
+  useEffect(() => {
+    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
+      setDificuldade(diff);
+    }
+  }, [diff]);
 
 
   useEffect(() => {
