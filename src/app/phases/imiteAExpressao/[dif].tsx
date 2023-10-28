@@ -14,6 +14,7 @@ import { useLocalSearchParams } from 'expo-router';
 import expressionImages from '../../config/expressionImages';
 import Correct from '../../modal/Animate';
 import StatusGame from '../../components/StatusGame';
+import SuccessModal from '../../modal/sucess';
 
 interface Respost {
   angerLikelihood: string | null,
@@ -91,7 +92,6 @@ export default function ImiteAExpressao() {
 
   
   const sucess = () => {
-    setCurrent(current + 1);
     if (current < 3) {
       setAnimate(true);
     } else {
@@ -104,6 +104,7 @@ export default function ImiteAExpressao() {
     // Limpa o campo de entrada e feedback
     setFeedback('');
     setImage(null)
+    setImageBase64(undefined)
 
     // Proxima emoção
     setCurrent(current + 1);
@@ -369,6 +370,7 @@ export default function ImiteAExpressao() {
         </View>
         <Text style={styles.feedback}>{feedback}</Text>
       </View>
+      <SuccessModal isVisible={isSuccessModalVisible} onClose={() => console.log('teste')}/>
     </View>
   );
 }

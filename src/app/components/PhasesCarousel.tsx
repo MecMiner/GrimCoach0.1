@@ -3,6 +3,11 @@ import { ImageSourcePropType, FlatList, View, StyleSheet, Dimensions, Image, Tou
 import {Link} from 'expo-router';
 import { Href } from 'expo-router/build/link/href';
 import { Dificuldade } from '../utils/utils';
+import {useState, useEffect, useCallback} from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type {
+    ViewToken
+  } from '@react-native/virtualized-lists';
 
 interface Images {
     title: string,
@@ -75,6 +80,36 @@ interface CarouselProps {
   }
 
 export default function Carousel ({dif} : CarouselProps) {
+
+    const [position, setPosition] = useState(0);
+
+    useEffect(() => {
+      // Recupere a posição armazenada
+      const getPosition = async () => {
+        try {
+          const savedPosition = await AsyncStorage.getItem('listPosition');
+          if (savedPosition !== null) {
+            setPosition(parseInt(savedPosition, 10));
+          } else {
+            setPosition(0);
+          }
+        } catch (error) {
+          console.error('Erro ao recuperar a posição da lista', error);
+        }
+      };
+  
+      getPosition();
+    }, []);
+
+    const onChangeList = useCallback(({ changed, viewableItems }: { changed: ViewToken[], viewableItems: ViewToken[] }) => {
+        if (viewableItems.length > 0) {
+          const index = viewableItems[0].index;
+          if (index) {
+            AsyncStorage.setItem('listPosition', index.toString());
+          }
+        }
+      },[]);
+  
     return (
         <View style={styles.container}>
             <FlatList
@@ -84,6 +119,12 @@ export default function Carousel ({dif} : CarouselProps) {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             keyExtractor={(_, index) => index.toString()} 
+            onViewableItemsChanged={onChangeList}
+            initialScrollIndex={position}
+            viewabilityConfig={{
+                itemVisiblePercentThreshold: 50,
+                minimumViewTime: 0,
+              }}
             renderItem={({item}) => {
                 return (
                 <View style={styles.imageContainer}>
