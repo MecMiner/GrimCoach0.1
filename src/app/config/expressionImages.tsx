@@ -20,12 +20,12 @@ const expressionImages: ExpressionImages = {
     },
 
     medio: {
-      feliz: require('./../../assets/emocoes/facil/felicidade.png'),
-      medo: require('./../../assets/emocoes/facil/medo.png'),
-      serio: require('./../../assets/emocoes/facil/seriedade.png'),
-      raiva: require('./../../assets/emocoes/facil/raiva.png'),
-      triste: require('./../../assets/emocoes/facil/tristeza.png'),
-      surpreso: require('./../../assets/emocoes/facil/surpresa.png')
+      feliz: require('./../../assets/emocoes/medio/felicidade.png'),
+      medo: require('./../../assets/emocoes/medio/medo.png'),
+      serio: require('./../../assets/emocoes/medio/seriedade.png'),
+      raiva: require('./../../assets/emocoes/medio/raiva.png'),
+      triste: require('./../../assets/emocoes/medio/tristeza.png'),
+      surpreso: require('./../../assets/emocoes/medio/surpresa.png')
     },
 
     dificil: {

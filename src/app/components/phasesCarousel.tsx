@@ -44,6 +44,24 @@ const images: Images[] = [
     },
 
     {
+        title: 'Pisca Pisca',
+        uri: require('./../../assets/phases/piscaPisca.png'),
+        link: '/phases/piscaPisca'
+    },
+
+    {
+        title: 'Sorria, você Está Sendo Filmado',
+        uri: require('./../../assets/phases/sorriaEstaSendoFilmado.png'),
+        link: '/phases/sorriaEstaSendoFilmado'
+    },
+
+    {
+        title: 'Chefim Mandou',
+        uri: require('./../../assets/phases/chefimMandou.png'),
+        link: '/phases/chefimMandou'
+    },
+
+    {
         title: 'Imite as Expressões' , 
         uri: require('./../../assets/phases/imiteAExpressao.png'),
         link:'/phases/imiteAExpressao'
