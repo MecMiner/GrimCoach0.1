@@ -21,6 +21,8 @@ export default function LigueExpressao() {
   const [atual, setAtual] = useState<number>(1);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [imagens, setImagens] = useState<ImageSourcePropType[]>([]);
+  const [imagenSelected, setImagenSelected] = useState<ImageSourcePropType>();
+
 
   const { dif } = useLocalSearchParams();
 
@@ -34,6 +36,7 @@ export default function LigueExpressao() {
 
 
   const atualizarImages = () => {
+    const expresssionDiff = expressionImages[dificuldade]
     const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
 
     // Gere 4 opções de emoção
@@ -41,20 +44,23 @@ export default function LigueExpressao() {
     setOptions(randomOptions);
     setRespost(shuffleArray(randomOptions));
 
-
-
-    randomOptions.map((e, index) => {
-
-      if (expressionImages[dificuldade][e] && expressionImages[dificuldade][e].length){
-        setImagens([...imagens, expressionImages[dificuldade][e][Math.random() * expressionImages[dificuldade][e].length]])
+    const images:ImageSourcePropType[] = []
+    randomOptions.map((e) => {
+      if (expresssionDiff[e] && expresssionDiff[e].length > 0){
+        
+        const randomIndex = Math.floor(Math.random() * expresssionDiff[e].length);
+        console.log(expresssionDiff)
+        images.push(expressionImages[dificuldade][e][randomIndex])
       }
     })
 
+    setImagens(images);
   }
 
   useEffect(() => {
+
     atualizarImages();
-  }, []);
+  }, [dificuldade]);
 
   useEffect(() => {
     if (selectedImage != null && selectedOption != null) {
@@ -64,6 +70,10 @@ export default function LigueExpressao() {
         setFeedback('');
         const novoArrayOption = options.filter(opcao => opcao !== selectedImage);
         const novoArrayRespost = respost.filter(opcao => opcao !== selectedImage);
+        const novoArrayImagens = imagens.filter(opcao => opcao !== imagenSelected);
+
+        setImagens(novoArrayImagens);
+
         setRespost(novoArrayRespost);
         setOptions(novoArrayOption);
         setSelectedImage(null);
@@ -109,15 +119,13 @@ export default function LigueExpressao() {
             {options.map((e, index) => (
               <View key={index} style={{ marginBottom: 10 }}>
                 {/* Exibir as imagens */}
-                {expressionImages[dificuldade][e] && (
-                  <TouchableOpacity style={[styles.boxOption, selectedImage === e && styles.optionSelected]} onPress={() => setSelectedImage(e)}>
+                  <TouchableOpacity style={[styles.boxOption, selectedImage === e && styles.optionSelected]} onPress={() => {setSelectedImage(e); setImagenSelected(imagens[index])}}>
                     <Image
                       source={imagens[index]}
                       style={styles.image}
                       resizeMode="contain"
                     />
                   </TouchableOpacity>
-                )}
               </View>
             ))}
           </View>
