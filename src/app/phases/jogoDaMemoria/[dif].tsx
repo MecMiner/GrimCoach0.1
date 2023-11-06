@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, ImageBackground, Text, SafeAreaView } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, ImageSourcePropType} from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
 import SuccessModal from '../../modal/sucess'; // Certifique-se de que a importação está correta
@@ -13,9 +13,11 @@ import { Dificuldade } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
 
 
+
 type Card = {
   id: number;
   value: string;
+  image: ImageSourcePropType;
 };
 
 export default function MemoryGame() {
@@ -48,23 +50,20 @@ export default function MemoryGame() {
   useEffect(() => {
     if (hasGameStarted && matchedPairs.length === cards.length / 2) {
       setCurrent(current + 1);
-      if (current < 2) {
-        setAnimate(true);
-      } else {
-        setIsSuccessModalVisible(true);
-      }
+      setAnimate(true);
     }
   }, [hasGameStarted, matchedPairs, cards]);
 
   const initializeGame = () => {
     const expressions = expressionName;
+    const expImg = expressionImages[dificuldade]
     const totalPairs = 6; // Número de pares de cartas
     const allPairs: Card[] = [];
     const shuffledPairs: Card[] = [];
 
     for (let i = 0; i < totalPairs; i++) {
-      allPairs.push({ id: i * 2, value: expressions[i] });
-      allPairs.push({ id: i * 2 + 1, value: expressions[i] });
+      allPairs.push({ id: i * 2, value: expressions[i], image: expImg[expressions[i]][Math.floor(Math.random() * expImg[expressions[i]].length)] });
+      allPairs.push({ id: i * 2 + 1, value: expressions[i], image: expImg[expressions[i]][Math.floor(Math.random() * expImg[expressions[i]].length)]  });
     }
 
     while (allPairs.length > 0) {
@@ -82,8 +81,7 @@ export default function MemoryGame() {
     }, 3000); // 3 segundos
   };
 
-  const handleCardPress = useCallback(
-    (index: number) => {
+  const handleCardPress = useCallback((index: number) => {
       if (flippedIndices.includes(index) || flippedIndices.length === 2 || isChecking || isCardMatched(cards[index].value)) {
         return;
       }
@@ -117,11 +115,17 @@ export default function MemoryGame() {
   const resetGame = () => {
     // Resetar todos os estados para reiniciar o jogo
     setAnimate(false)
-    setCards([]);
-    setFlippedIndices([]);
-    setMatchedPairs([]);
-    setIsChecking(false);
-    initializeGame(); // Iniciar um novo jogo após a reinicialização
+    if (current < 2){
+      setAnimate(false)
+      setCards([]);
+      setFlippedIndices([]);
+      setMatchedPairs([]);
+      setIsChecking(false);
+      initializeGame(); // Iniciar um novo jogo após a reinicialização
+    } else {
+      setIsSuccessModalVisible(true);
+    }
+
   };
 
   return (
@@ -145,14 +149,14 @@ export default function MemoryGame() {
               activeOpacity={0.7}
             >
               {(isCardFlipped(index) || isCardMatched(card.value) || areCardsVisible) ? (
-                <Image source={expressionImages[dificuldade][card.value][Math.floor(Math.random() * expressionImages[dificuldade][card.value].length)]} style={styles.image} />
+                <Image source={card.image} style={styles.image} />
               ) : (
                 <Image source={expressionImages.baralho} style={styles.imageBaralho} />
               )}
             </TouchableOpacity>
           ))}
 
-          <SuccessModal isVisible={isSuccessModalVisible} onRedo={() => console.log('voltar')}  onAdvance={() => setIsSuccessModalVisible(false)}/>
+          <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/encontreOErro/${diff}`} />
         </View>
       </View>
     </View>

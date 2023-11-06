@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Text, ImageSourcePropType, Animated } from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
 import SuccessModal from '../../modal/sucess';
@@ -21,6 +21,7 @@ export default function CompareExpressions() {
   const [animated, setAnimated] = useState(false);
   const [current, setCurrent] = useState<number>(1);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const [imagens, setImagens] = useState<ImageSourcePropType[]>([])
 
   const { dif } = useLocalSearchParams();
 
@@ -33,25 +34,38 @@ export default function CompareExpressions() {
   }, [diff]);
 
 
-
-  useEffect(() => {
-
+  const atualizarImagens = () => {
     const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
-    const allImages = [randomEmotion]
+    const allOption = [randomEmotion]
 
-    while (allImages.length < 12) {
+    while (allOption.length < 12) {
       const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
 
-      if (!allImages.includes(randomEmotion)) {
+      if (!allOption.includes(randomEmotion)) {
         for (let index = 0; index < 11; index++) {
-          allImages.push(randomEmotion);
+          allOption.push(randomEmotion);
         }
       }
     }
-    setOptions(shuffleArray(allImages))
-    setRespost(randomEmotion);
 
-  }, []);
+    const embaralhar = shuffleArray(allOption);
+    const allImages: ImageSourcePropType[] = [];
+
+    embaralhar.map((item) => {
+      if(expressionImages[dificuldade][item].length){
+        allImages.push(expressionImages[dificuldade][item][Math.floor(Math.random() * expressionImages[dificuldade][item].length)])
+      }
+    })
+    setOptions(embaralhar)
+    setImagens(allImages)
+    setRespost(randomEmotion);
+  }
+
+  useEffect(() => {
+    atualizarImagens();
+
+
+  }, [dificuldade]);
 
 
 
@@ -64,20 +78,14 @@ export default function CompareExpressions() {
   const resetGame = () => {
     setAnimated(false)
 
-    const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
-    const allImages = [randomEmotion]
+    if (current < 5) {
+      atualizarImagens();
+      setCurrent(current+1)
 
-    while (allImages.length < 12) {
-      const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
-
-      if (!allImages.includes(randomEmotion)) {
-        for (let index = 0; index < 11; index++) {
-          allImages.push(randomEmotion);
-        }
-      }
+    } else {
+      setIsSuccessModalVisible(true);
     }
-    setOptions(shuffleArray(allImages))
-    setRespost(randomEmotion);
+
 
 
   }
@@ -107,16 +115,15 @@ export default function CompareExpressions() {
               onPress={() => compare(index)}
               activeOpacity={0.7}
             >
-              <Image source={expressionImages[dificuldade][item][Math.floor(Math.random() * expressionImages[dificuldade][item].length)]} style={styles.image} />
+              <Image source={imagens[index]} style={styles.image} />
 
             </TouchableOpacity>
           ))}
 
-          <SuccessModal isVisible={isSuccessModalVisible} onClose={() => { }} />
         </View>
         <Text style={styles.feedback}>{feedback}</Text>
       </View>
-      <SuccessModal isVisible={isSuccessModalVisible} onClose={closeSuccessModal} />
+      <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/piscaPisca/${dificuldade}`} />
     </View>
   );
 }

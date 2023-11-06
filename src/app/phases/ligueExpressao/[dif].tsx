@@ -10,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import colors from '../../config/colors';
 import { Dificuldade, generateRandomOptions, shuffleArray } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
+import Correct from '../../modal/Animate';
 
 export default function LigueExpressao() {
   const [respost, setRespost] = useState<string[]>([]);
@@ -18,11 +19,15 @@ export default function LigueExpressao() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null); // Opção selecionada
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // Estado para controlar a visibilidade da modal de sucesso
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [atual, setAtual] = useState<number>(1);
+  const [atual, setAtual] = useState<number>(0);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [imagens, setImagens] = useState<ImageSourcePropType[]>([]);
   const [imagenSelected, setImagenSelected] = useState<ImageSourcePropType>();
+  const [animated, setAnimated] = useState(false);
 
+
+  
+const TOTAL_ROUNDS = 3;
 
   const { dif } = useLocalSearchParams();
 
@@ -49,7 +54,6 @@ export default function LigueExpressao() {
       if (expresssionDiff[e] && expresssionDiff[e].length > 0){
         
         const randomIndex = Math.floor(Math.random() * expresssionDiff[e].length);
-        console.log(expresssionDiff)
         images.push(expressionImages[dificuldade][e][randomIndex])
       }
     })
@@ -72,12 +76,18 @@ export default function LigueExpressao() {
         const novoArrayRespost = respost.filter(opcao => opcao !== selectedImage);
         const novoArrayImagens = imagens.filter(opcao => opcao !== imagenSelected);
 
-        setImagens(novoArrayImagens);
+        if(!novoArrayImagens.length){
+          setAnimated(true);
 
-        setRespost(novoArrayRespost);
-        setOptions(novoArrayOption);
+        } else {
+          setImagens(novoArrayImagens);
+          setRespost(novoArrayRespost);
+          setOptions(novoArrayOption);
+        }
+
         setSelectedImage(null);
         setSelectedOption(null);
+
       } else {
         setSelectedImage(null);
         setSelectedOption(null);
@@ -95,15 +105,17 @@ export default function LigueExpressao() {
   };
 
   const resetGame = () => {
-    const randomIndex = Math.floor(Math.random() * expressionName.length);
-    const randomEmotion = expressionName[randomIndex];
+    const current = atual + 1;
+    setAnimated(false);
 
+    if (current < TOTAL_ROUNDS){
+      setAtual (current);
+      atualizarImages();
 
-    // Gere 4 opções de emoção, incluindo a correta
-    const randomOptions = generateRandomOptions(expressionName, randomEmotion, 4);
-    setOptions(randomOptions);
-    setRespost(shuffleArray(randomOptions));
-  }
+    } else {
+      setIsSuccessModalVisible(true);
+    }
+  } 
 
 
 
@@ -111,8 +123,9 @@ export default function LigueExpressao() {
     <View style={styles.container}>
       <Title title='Combine' />
       <StatusBar backgroundColor={colors.backGroundTitle} />
-      <StatusGame atual={atual} total={3} />
+      <StatusGame atual={atual + 1} total={TOTAL_ROUNDS} />
       <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
+      <Correct isVisible={animated} onAnimationFinish={resetGame}/>
       <View style={styles.game}>
         <View style={styles.row}>
           <View style={styles.column}>
@@ -144,7 +157,7 @@ export default function LigueExpressao() {
         {/* Feedback para o usuário */}
         <Text style={styles.feedback}>{feedback}</Text>
 
-        <SuccessModal isVisible={isSuccessModalVisible} onClose={closeSuccessModal} />
+        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/jogoDaMemoria/${diff}`}/>
       </View>
     </View>
   );
