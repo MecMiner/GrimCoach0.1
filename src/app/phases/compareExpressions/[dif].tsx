@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Text, ImageBackground, Animated } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Text, ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
 import SuccessModal from '../../modal/sucess';
@@ -13,6 +13,9 @@ import colors from '../../config/colors';
 import { useLocalSearchParams } from 'expo-router';
 import { Dificuldade } from '../../utils/utils';
 
+const TOTAL_ROUNDS = 5;
+
+
 
 export default function CompareExpressions() {
   const [respost, setRespost] = useState<string>('');
@@ -21,7 +24,9 @@ export default function CompareExpressions() {
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false); // Estado para controlar a visibilidade da modal de sucesso
   const [animated, setAnimated] = useState(false);
   const [current, setCurrent] = useState<number>(1);
-  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil');
+  const [optionsImage, setOptionsImage] = useState<ImageSourcePropType>();
+  const [respostImage, setRespostImage] = useState<ImageSourcePropType>();
 
   const { dif } = useLocalSearchParams();
 
@@ -34,35 +39,44 @@ export default function CompareExpressions() {
   }, [diff]);
 
 
-
-  useEffect(() => {
+  function atualizarImages() {
     const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
+  
+    const optionsImg = expressionImages[dificuldade][randomEmotion];
+    if (optionsImg && optionsImg.length) {
+      setOptionsImage(optionsImg[Math.floor(Math.random() * optionsImg.length)]);
+    }
+  
     const randomEmotion2 = expressionName[Math.floor(Math.random() * expressionName.length)];
-
+  
+    const respostImg = expressionImages[dificuldade][randomEmotion2];
+    if (respostImg && respostImg.length) {
+      setRespostImage(respostImg[Math.floor(Math.random() * respostImg.length)]);
+    }
+  
     setOptions(randomEmotion);
     setRespost(randomEmotion2);
-  }, []);
+  }
+  
+
+  useEffect(() => {
+
+    atualizarImages();
+
+  }, [dificuldade]);
 
 
 
   const compare = (isTrue: boolean) => {
     if (isTrue) {
       if (options === respost) {
-        if (current < 5) {
           setAnimated(true)
-        } else {
-          setIsSuccessModalVisible(true)
-        }
       } else {
         setFeedback('Infelimente você errou essa')
       }
     } else {
       if (options !== respost) {
-        if (current < 5) {
-          setAnimated(true)
-        } else {
-          setIsSuccessModalVisible(true)
-        }
+        setAnimated(true)
       } else {
         setFeedback('Infelimente você errou essa')
       }
@@ -70,12 +84,20 @@ export default function CompareExpressions() {
   }
 
   const resetGame = () => {
-    const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
-    const randomEmotion2 = expressionName[Math.floor(Math.random() * expressionName.length)];
-    setCurrent(current + 1);
-    setAnimated(false)
-    setOptions(randomEmotion);
-    setRespost(randomEmotion2);
+    if (current < TOTAL_ROUNDS) {
+      console.log('reset')
+      
+      atualizarImages();
+  
+      setCurrent(current + 1);
+      setAnimated(false)
+
+      setFeedback('');
+    } else {
+      setIsSuccessModalVisible(true)
+      setAnimated(false);
+    }
+
   }
 
   const closeSuccessModal = () => {
@@ -90,20 +112,20 @@ export default function CompareExpressions() {
     <View style={styles.container}>
       <Title title='Compare as Expressões' />
       <Correct isVisible={animated} onAnimationFinish={() => resetGame()} />
-      <StatusGame atual={current} total={5} />
+      <StatusGame atual={current} total={TOTAL_ROUNDS} />
       <SpeechText style={{}} text={'Informe se a figuras são iguais ou diferentes'} />
       <StatusBar backgroundColor={colors.backGroundTitle} />
 
       <View style={styles.game}>
         <View style={{ flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{flexDirection : 'row'}}>
-          <View style={styles.viewImage}>
-            <Image style={styles.image} source={expressionImages[dificuldade][options]} />
-          </View>
+          <View style={{ flexDirection: 'column' }}>
+            <View style={styles.viewImage}>
+             {optionsImage && <Image style={styles.image} source={optionsImage} />}
+            </View>
 
-          <View style={styles.viewImage}>
-            <Image style={styles.image} source={expressionImages[dificuldade][respost]} />
-          </View>
+            <View style={styles.viewImage}>
+            {respostImage && <Image style={styles.image} source={respostImage} />}
+            </View>
 
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 40 }}>
@@ -117,11 +139,9 @@ export default function CompareExpressions() {
             </TouchableOpacity>
 
           </View>
-
-
         </View>
         <Text style={styles.feedback}>{feedback}</Text>
-        <SuccessModal isVisible={isSuccessModalVisible} onClose={closeSuccessModal} />
+        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/escrevaExpressao/${diff}`}/>
       </View>
     </View>
   );
@@ -153,11 +173,15 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 20,
+    marginVertical: 20,
     padding: 10,
+    elevation: 5,
   },
   image: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
+    borderRadius: 20,
+
   },
 
   viewCompare: {

@@ -107,7 +107,7 @@ export default function CompareExpressions() {
               onPress={() => compare(index)}
               activeOpacity={0.7}
             >
-              <Image source={expressionImages[dificuldade][item]} style={styles.image} />
+              <Image source={expressionImages[dificuldade][item][Math.floor(Math.random() * expressionImages[dificuldade][item].length)]} style={styles.image} />
 
             </TouchableOpacity>
           ))}

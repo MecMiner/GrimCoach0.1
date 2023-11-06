@@ -106,7 +106,7 @@ export default function ImiteAExpressao() {
 
         if (face.rightEyeOpenProbability > 0.3 && face.leftEyeOpenProbability > 0.3){
             
-            if (piscouEsquerdo >= 2) {
+            if (piscouEsquerdo >= 4) {
                 console.log('piscou esquerdo')
                 setSucessoNecessario(sucessoNecessario - 1);
                 setFechouOlhos(0);
@@ -115,7 +115,7 @@ export default function ImiteAExpressao() {
                 setOlhosAberto(true);
 
             }
-            if (piscouDireito >= 2) {
+            if (piscouDireito >= 4) {
                 console.log('piscou direito')
                 setSucessoNecessario(sucessoNecessario - 1);
                 setFechouOlhos(0);
@@ -125,7 +125,7 @@ export default function ImiteAExpressao() {
 
             }
 
-            if (fechouOlhos >= 2) {
+            if (fechouOlhos >= 4) {
                 console.log('fechou os olhos')
                 setSucessoNecessario(sucessoNecessario - 1);
                 setFechouOlhos(0);

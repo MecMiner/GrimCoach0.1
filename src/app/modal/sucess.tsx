@@ -1,16 +1,16 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import {Link} from 'expo-router'
+import { Href } from 'expo-router/build/link/href';
 
 interface SuccessModalProps {
   isVisible: boolean;
-  onClose: () => void;
+  nextPag: Href;
 }
 
-const SuccessModal: React.FC<SuccessModalProps> = ({ isVisible, onClose }) => {
+const SuccessModal: React.FC<SuccessModalProps> = ({ isVisible, nextPag }) => {
 
-  function onRedo(){}
-  function onAdvance(){}
   return (
     <Modal
       visible={isVisible}
@@ -28,12 +28,17 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ isVisible, onClose }) => {
 
           </View>
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.buttonRedo} onPress={onRedo}>
-              <Text style={styles.buttonText}>Refazer</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonAdvance} onPress={onAdvance}>
+            <Link href={'/selectLevel'} asChild>
+              <TouchableOpacity style={styles.buttonRedo}>
+                <Text style={styles.buttonText}>Refazer</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href={nextPag} asChild>
+            <TouchableOpacity style={styles.buttonAdvance} >
               <Text style={styles.buttonText}>Avançar</Text>
             </TouchableOpacity>
+
+            </Link>
           </View>
         </View>
       </View>

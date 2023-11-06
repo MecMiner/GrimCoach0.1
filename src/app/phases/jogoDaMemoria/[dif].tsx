@@ -145,14 +145,14 @@ export default function MemoryGame() {
               activeOpacity={0.7}
             >
               {(isCardFlipped(index) || isCardMatched(card.value) || areCardsVisible) ? (
-                <Image source={expressionImages[dificuldade][card.value]} style={styles.image} />
+                <Image source={expressionImages[dificuldade][card.value][Math.floor(Math.random() * expressionImages[dificuldade][card.value].length)]} style={styles.image} />
               ) : (
                 <Image source={expressionImages.baralho} style={styles.imageBaralho} />
               )}
             </TouchableOpacity>
           ))}
 
-          <SuccessModal isVisible={isSuccessModalVisible} onClose={() => { }} />
+          <SuccessModal isVisible={isSuccessModalVisible} onRedo={() => console.log('voltar')}  onAdvance={() => setIsSuccessModalVisible(false)}/>
         </View>
       </View>
     </View>

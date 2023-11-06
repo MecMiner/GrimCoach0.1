@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TextInput, StyleSheet, Text } from 'react-native';
+import { View, Image, TextInput, StyleSheet, Text,ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
 import stringSimilarity from 'string-similarity';
@@ -15,8 +15,11 @@ import { Dificuldade, shuffleArray } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
 
 
+const TOTAL_ROUNDS = 5;
 
-export default function EscrevaExpressao({}) {
+
+
+export default function EscrevaExpressao() {
   const [inputEmotion, setInputEmotion] = useState<string>(''); //Inicializar Input de Emoçao
   const [feedback, setFeedback] = useState<string>(''); //Inicializa feedeback
   const [expression, setExpression] = useState<string[]>([]); // Inicialize com uma emoção padrão
@@ -24,6 +27,7 @@ export default function EscrevaExpressao({}) {
   const [current, setCurrent] = useState<number>(0); //Inicial parte da fase em que esta
   const [animated, setAnimated] = useState<boolean>(false);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const [imagemApresentada, setImagemApresentada] = useState<ImageSourcePropType>(expressionImages.facil);
   const { dif } = useLocalSearchParams();
 
   const diff = Array.isArray(dif) ? dif[0] : dif;
@@ -41,7 +45,12 @@ export default function EscrevaExpressao({}) {
 
     // Define um array de emoções aleatórias
     setExpression(randomEmotion);
-  }, []);
+
+    if (expressionImages[dificuldade] && expressionImages[dificuldade][randomEmotion[current]] && expressionImages[dificuldade][randomEmotion[current]].length){
+      setImagemApresentada(expressionImages[dificuldade][randomEmotion[current]][Math.floor(Math.random() * expressionImages[dificuldade][randomEmotion[current]].length)])
+    }
+
+  }, [dificuldade]);
 
   const checkEmotion = () => {
     const userEmotion = inputEmotion.toLowerCase();
@@ -63,39 +72,46 @@ export default function EscrevaExpressao({}) {
 
   const resetFase = () => {
     setAnimated(false);
-    setInputEmotion(''); // Limpa o campo de entrada de emoção
-    setFeedback(''); // Limpa o feedback
-    setCurrent(current + 1);
-  };
 
-  const sucess = () => {
-    if (current === 4) {
-      setIsSuccessModalVisible(true)
+    if (current < TOTAL_ROUNDS - 1) {
+      const imageCurrent = current + 1;
+      setInputEmotion(''); // Limpa o campo de entrada de emoção
+      setFeedback(''); // Limpa o feedback
+  
+      setCurrent(imageCurrent);
+  
+  
+      if (expressionImages[dificuldade] && expressionImages[dificuldade][expression[imageCurrent]] && expressionImages[dificuldade][expression[imageCurrent]].length){
+        setImagemApresentada(expressionImages[dificuldade][expression[imageCurrent]][Math.floor(Math.random() * expressionImages[dificuldade][expression[imageCurrent]].length)])
+      }
     } else {
-      setAnimated(true);
+      setIsSuccessModalVisible(true);
     }
 
 
-  }
-  const closeSuccessModal = () => {
-
-
-    setIsSuccessModalVisible(false);
   };
+
+  const sucess = () => {
+
+    setAnimated(true)
+
+  }
+ 
 
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor={colors.backGroundTitle}/>
       <Correct isVisible={animated} onAnimationFinish={resetFase}/>
       <SpeechText style={{}} text={'Digite a expressão que a imagem passsa'} />
       <Title title='Identifique a Expressão' />
-      <StatusGame atual={current+1} total={5} />
+      <StatusGame atual={current+1} total={TOTAL_ROUNDS} />
       <View style={styles.game}>
         
         {expressionImages[dificuldade][expression[current]] && (
           <View style={styles.viewImage}>
             <Image
-              source={expressionImages[dificuldade][expression[current]]}
+              source={imagemApresentada}
               style={styles.image}
             />
           </View>
@@ -114,8 +130,7 @@ export default function EscrevaExpressao({}) {
         <Text style={styles.feedback}>{feedback}</Text>
 
 
-        <SuccessModal isVisible={isSuccessModalVisible} onClose={closeSuccessModal} />
-
+        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/selecioneExpressao/${diff}`}/>
       </View>
     </View>
   );

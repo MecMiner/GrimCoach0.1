@@ -330,7 +330,7 @@ export default function ImiteAExpressao() {
             >
                         {expressionImages[dificuldade][expression[current]] && (
               <Image
-                source={expressionImages[dificuldade][expression[current]]}
+                source={expressionImages[dificuldade][expression[current]][Math.floor(Math.random() * expressionImages[dificuldade][expression[current]].length)]}
                 style={styles.image}
               />
           )}
@@ -370,7 +370,7 @@ export default function ImiteAExpressao() {
         </View>
         <Text style={styles.feedback}>{feedback}</Text>
       </View>
-      <SuccessModal isVisible={isSuccessModalVisible} onClose={() => console.log('teste')}/>
+      <SuccessModal isVisible={isSuccessModalVisible} onRedo={() => console.log('voltar')}  onAdvance={() => setIsSuccessModalVisible(false)}/>
     </View>
   );
 }

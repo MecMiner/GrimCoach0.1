@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackground, TouchableWithoutFeedback } from 'react-native';
+import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackground, TouchableWithoutFeedback, ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages'; // Certifique-se de que a importação está correta
 import expressionName from '../../config/expressionName'; // Certifique-se de que a importação está correta
 import SuccessModal from '../../modal/sucess';
@@ -20,6 +20,7 @@ export default function LigueExpressao() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [atual, setAtual] = useState<number>(1);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const [imagens, setImagens] = useState<ImageSourcePropType[]>([]);
 
   const { dif } = useLocalSearchParams();
 
@@ -31,16 +32,28 @@ export default function LigueExpressao() {
     }
   }, [diff]);
 
-  useEffect(() => {
-    // Escolhe aleatoriamente a emoção correta
-    const randomIndex = Math.floor(Math.random() * expressionName.length);
-    const randomEmotion = expressionName[randomIndex];
 
+  const atualizarImages = () => {
+    const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
 
-    // Gere 4 opções de emoção, incluindo a correta
+    // Gere 4 opções de emoção
     const randomOptions = generateRandomOptions(expressionName, randomEmotion, 4);
     setOptions(randomOptions);
     setRespost(shuffleArray(randomOptions));
+
+
+
+    randomOptions.map((e, index) => {
+
+      if (expressionImages[dificuldade][e] && expressionImages[dificuldade][e].length){
+        setImagens([...imagens, expressionImages[dificuldade][e][Math.random() * expressionImages[dificuldade][e].length]])
+      }
+    })
+
+  }
+
+  useEffect(() => {
+    atualizarImages();
   }, []);
 
   useEffect(() => {
@@ -99,7 +112,7 @@ export default function LigueExpressao() {
                 {expressionImages[dificuldade][e] && (
                   <TouchableOpacity style={[styles.boxOption, selectedImage === e && styles.optionSelected]} onPress={() => setSelectedImage(e)}>
                     <Image
-                      source={expressionImages[dificuldade][e]}
+                      source={imagens[index]}
                       style={styles.image}
                       resizeMode="contain"
                     />
