@@ -149,26 +149,27 @@ const styles = StyleSheet.create({
     },
     flatList: { flexGrow: 0},
     imageContainer: {
-        width,
-        height: 700,
+        width: width,
         justifyContent: 'center',
         alignItems: 'center'
     },
-    image: {
-        height: 500,
-        width: width-100,
-        resizeMode: 'cover',
-        borderRadius: 10,
-    },
     initialPhase: {
         alignItems: 'center',
-        justifyContent: 'center',
-        height: 600,
-        width: width-50,
+        width: width - (width * 0.1),
+        height: (height * 0.7),
         resizeMode: 'cover',
         borderRadius: 10,
         backgroundColor: 'white',
         elevation: 5,
+        marginBottom: 20,
+        padding: 20,
+    },
+    image: {
+        width: '100%',
+        aspectRatio: 1,
+        maxHeight: width - (width * 0.2),
+        resizeMode: 'cover',
+        borderRadius: 10,
     },
     title:{
         fontSize: 24,

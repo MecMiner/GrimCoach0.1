@@ -152,8 +152,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    width: 120,
-    height: 120,
+    width: '25%',
+    aspectRatio: 1,
     margin: 10,
     backgroundColor: 'white',
     borderRadius: 5,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: 80,
-    height: 80,
+    width: '90%',
+    height: '90%',
   },
 });

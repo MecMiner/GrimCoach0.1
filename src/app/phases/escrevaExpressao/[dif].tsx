@@ -165,16 +165,16 @@ const styles = StyleSheet.create({
   viewImage: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 250,
-    height: 250,
+    width: '50%',
+    aspectRatio: 1,
     backgroundColor: 'white',
     borderRadius: 20,
     elevation: 5,
 
   },
   image: {
-    width: 200,
-    height: 200,
+    width: '90%',
+    height: '90%',
   },
   input: {
     width: 250,

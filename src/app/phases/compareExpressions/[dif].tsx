@@ -168,20 +168,18 @@ const styles = StyleSheet.create({
   },
 
   viewImage: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 200,
-    height: 200,
+    width: '50%',
+    aspectRatio: 1,
     borderRadius: 20,
     marginVertical: 20,
     padding: 10,
     elevation: 5,
   },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 20,
 
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
   },
 
   viewCompare: {

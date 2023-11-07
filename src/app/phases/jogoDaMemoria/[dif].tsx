@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, ImageSourcePropType} from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
 import SuccessModal from '../../modal/sucess'; // Certifique-se de que a importação está correta
@@ -45,7 +45,7 @@ export default function MemoryGame() {
 
   useEffect(() => {
     initializeGame();
-  }, []);
+  }, [dificuldade]);
 
   useEffect(() => {
     if (hasGameStarted && matchedPairs.length === cards.length / 2) {
@@ -63,7 +63,7 @@ export default function MemoryGame() {
 
     for (let i = 0; i < totalPairs; i++) {
       allPairs.push({ id: i * 2, value: expressions[i], image: expImg[expressions[i]][Math.floor(Math.random() * expImg[expressions[i]].length)] });
-      allPairs.push({ id: i * 2 + 1, value: expressions[i], image: expImg[expressions[i]][Math.floor(Math.random() * expImg[expressions[i]].length)]  });
+      allPairs.push({ id: i * 2 + 1, value: expressions[i], image: expImg[expressions[i]][Math.floor(Math.random() * expImg[expressions[i]].length)] });
     }
 
     while (allPairs.length > 0) {
@@ -74,7 +74,7 @@ export default function MemoryGame() {
     setCards(shuffledPairs);
     setHasGameStarted(true);
 
-    // Mostrar as cartas no início e, em seguida, escondê-las após 3 segundos (ajuste conforme necessário)
+    // Mostrar as cartas no início e, em seguida, escondê-las após 3 segundos
     setAreCardsVisible(true);
     setTimeout(() => {
       setAreCardsVisible(false);
@@ -82,28 +82,28 @@ export default function MemoryGame() {
   };
 
   const handleCardPress = useCallback((index: number) => {
-      if (flippedIndices.includes(index) || flippedIndices.length === 2 || isChecking || isCardMatched(cards[index].value)) {
-        return;
+    if (flippedIndices.includes(index) || flippedIndices.length === 2 || isChecking || isCardMatched(cards[index].value)) {
+      return;
+    }
+
+    setFlippedIndices([...flippedIndices, index]);
+
+    if (flippedIndices.length === 1) {
+      const firstCard = cards[flippedIndices[0]].value;
+      const secondCard = cards[index].value;
+
+      if (firstCard === secondCard) {
+        setMatchedPairs([...matchedPairs, firstCard]);
       }
 
-      setFlippedIndices([...flippedIndices, index]);
+      setIsChecking(true);
 
-      if (flippedIndices.length === 1) {
-        const firstCard = cards[flippedIndices[0]].value;
-        const secondCard = cards[index].value;
-
-        if (firstCard === secondCard) {
-          setMatchedPairs([...matchedPairs, firstCard]);
-        }
-
-        setIsChecking(true);
-
-        setTimeout(() => {
-          setFlippedIndices([]);
-          setIsChecking(false);
-        }, 1000); // Volta as cartas após 1 segundo (ajuste conforme necessário)
-      }
-    },
+      setTimeout(() => {
+        setFlippedIndices([]);
+        setIsChecking(false);
+      }, 1000); // Volta as cartas após 1 segundo
+    }
+  },
     [flippedIndices, isChecking, cards, matchedPairs]
   );
 
@@ -115,7 +115,7 @@ export default function MemoryGame() {
   const resetGame = () => {
     // Resetar todos os estados para reiniciar o jogo
     setAnimate(false)
-    if (current < 2){
+    if (current < 2) {
       setAnimate(false)
       setCards([]);
       setFlippedIndices([]);
@@ -130,11 +130,11 @@ export default function MemoryGame() {
 
   return (
     <View style={styles.container}>
-        <Title title='Jogo da Memória' />
-        <StatusBar backgroundColor={colors.backGroundTitle} />
+      <Title title='Jogo da Memória' />
+      <StatusBar backgroundColor={colors.backGroundTitle} />
       <Correct isVisible={animate} onAnimationFinish={() => resetGame()} />
       <StatusGame atual={current} total={2} />
-        <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
+      <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
       <View style={styles.game}>
         <View style={styles.grid}>
           {cards.map((card, index) => (
@@ -188,8 +188,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    width: 120,
-    height: 120,
+    width: '25%',
+    aspectRatio: 1,
     margin: 10,
     backgroundColor: 'white',
     borderRadius: 5,
@@ -207,12 +207,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   image: {
-    width: 80,
-    height: 80,
+    width: '90%',
+    height: '90%',
+    borderRadius: 5,
   },
   imageBaralho: {
-    width: 120,
-    height: 120,
+    width: '100%',
+    height: '100%',
     borderRadius: 5,
   },
 });

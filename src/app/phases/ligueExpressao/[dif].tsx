@@ -183,19 +183,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   column: {
+    width: '50%',
     flexDirection: 'column',
     alignItems: 'center',
     marginBottom: 10,
-    margin: 30,
+    margin: 5,
   },
   row: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 5,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: '90%',
+    height: '90%',
   },
   text: {
     fontSize: 16,
@@ -211,8 +213,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   boxOption: {
-    height: 150,
-    width: 150,
+    width: '60%',
+    aspectRatio: 1,
     backgroundColor: "#F5F5F5",
     borderRadius: 5,
     alignItems: 'center',
