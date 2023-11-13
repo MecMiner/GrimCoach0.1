@@ -1,27 +1,91 @@
-import { Camera, CameraType } from 'expo-camera';
-import { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Modal } from 'react-native';
+import { Camera, CameraType, FaceDetectionResult } from 'expo-camera';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, ImageSourcePropType, View, Dimensions, Image } from 'react-native';
 import ButtonGame from '../../components/ButtonGame';
 
-import { Entypo } from '@expo/vector-icons';
-import axios from 'axios';
 import colors from '../../config/colors';
 import Title from '../../components/title';
 import SpeechText from '../../components/SpeechText';
+import * as FaceDetector from 'expo-face-detector';
 import { StatusBar } from 'expo-status-bar';
+import { useLocalSearchParams } from 'expo-router';
+import { Dificuldade } from '../../utils/utils';
+import Correct from '../../modal/Animate';
 
 
+const comandos: ImageSourcePropType[] = [
+  require("./../../../assets/phases/chefimMandou/1.png"),
+  require("./../../../assets/phases/chefimMandou/2.png"),
+  require("./../../../assets/phases/chefimMandou/3.png"),
+  require("./../../../assets/phases/chefimMandou/4.png"),
+  require("./../../../assets/phases/chefimMandou/5.png"),
+  require("./../../../assets/phases/chefimMandou/6.png"),
+  require("./../../../assets/phases/chefimMandou/7.png"),
+  require("./../../../assets/phases/chefimMandou/8.png"),
+]
+
+const comandosTexto: string[] = [
+  'Sério de olhos aberto',
+  'Sério de olhos fechados',
+
+]
 
 const { width, height } = Dimensions.get('window');
 
 export default function ImiteAExpressao() {
   const [permission, requestPermission] = Camera.useCameraPermissions(); //Const permissao para uso da camera
-  const [image, setImage] = useState(null); //Const para setar caminho da imagem
 
-  const [openCamera, setOpenCamera] = useState(false); //Estado de abertura de camera
-  const [respost, setRespost] = useState<string | null>(); //Const resposta para conferir
-  const [analyzing, setAnalyzing] = useState<boolean>(false); //Verificar estado da análise
-  const cameraRef = useRef(null);
+  const [animated, setAnimated] = useState(false);
+  const [currentComando, setCurrentComando] = useState<number>();
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const [sucessoNecessario, setSucessoNecessario] = useState(0);
+
+  const { dif } = useLocalSearchParams();
+
+  const diff = Array.isArray(dif) ? dif[0] : dif;
+
+  useEffect(() => {
+    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
+      setDificuldade(diff);
+    }
+
+    if (dificuldade === 'facil') {
+        setSucessoNecessario(3);
+      } else if (dificuldade === 'medio') {
+        setSucessoNecessario(5);
+      } else if (dificuldade === 'dificil') {
+        setSucessoNecessario(7);
+      }
+  }, [diff]);
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * comandos.length)
+    setCurrentComando(randomIndex)
+  }, [dificuldade])
+
+
+
+  const resetGame = () => {
+
+
+  }
+
+  const verificar= () => {
+
+  }
+
+
+  function handleFaceDetector({faces}: FaceDetectionResult){
+    //console.log(faces);
+
+    const face = faces[0] as any;
+
+    if (face){
+        
+
+
+    } 
+  }
 
   if (!permission) {
     return <View />;
@@ -31,6 +95,7 @@ export default function ImiteAExpressao() {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor={colors.backGroundTitle}/>
         <Title title='Permissão' />
         <SpeechText style={{}} text={'Você precissa concerder permissão para poder jogar essa fase'} />
         <View style={styles.game}>
@@ -54,32 +119,33 @@ export default function ImiteAExpressao() {
 
   return (
     <View style={styles.container}>
-      <Title title='Imite a expressão' />
-      <SpeechText style={{}} text={'Você deve tirar uma foto imitando a expressão'} />
-      <Modal
-        visible={openCamera}
-      >
-        <Camera
-          style={styles.camera}
-          type={CameraType.front}
-          ref={cameraRef}
-        >
-        </Camera>
-        <StatusBar hidden />
-
-      </Modal>
+      <StatusBar backgroundColor={colors.backGroundTitle}/>
+      <Title title='Chefim Mandou' />
+      <SpeechText style={{}} text={'Você deve piscar os olhos de acordo com a instrução'} />
+      <Correct isVisible={animated} onAnimationFinish={resetGame}/>
       <View style={styles.game}>
-
-        <View style={styles.imagePic}>
-          {image ?
-            <Image style={styles.picImage} source={{ uri: image }} />
-            :
-
-            <TouchableOpacity onPress={() => setOpenCamera(true)}>
-              <Entypo name="camera" size={40} color="black" />
-            </TouchableOpacity>}
+        <View style={styles.viewCamera}>
+            <Camera
+            style={styles.camera}
+            type={CameraType.front}
+            onFacesDetected={handleFaceDetector}
+            faceDetectorSettings={{
+                mode: FaceDetector.FaceDetectorMode.fast,
+                detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
+                runClassifications: FaceDetector.FaceDetectorClassifications.all,
+                minDetectionInterval: 100,
+                tracking: true,
+              }}
+            >
+            </Camera>
         </View>
-        <Text>{'Resultado: ' + respost}</Text>
+              <View style={{width: "30%", aspectRatio: 1, marginTop: 20, backgroundColor: 'white', padding: 10, borderRadius: 10, elevation: 5}}>
+                <Image source={comandos[0]} style={{width: '100%', height: '100%'}}/>
+              </View>
+              <View style={{width: '90%', marginTop: 10, padding: 10, backgroundColor: 'white', borderRadius: 10, elevation: 5}}>
+              <Text style={{fontSize: 32, color: colors.title ,fontWeight: "bold"}}>{comandosTexto[0]}  </Text>
+              </View>
+
       </View>
     </View>
   );
@@ -97,44 +163,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 50,
   },
-  camera: {
-    flex: 1,
-    borderRadius: 60,
-    top: 0,
+
+  viewCamera: {
+    justifyContent: 'center',
     alignItems: 'center',
+    width: '80%',
+    aspectRatio: 3/4,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    elevation: 5,
   },
-  picImage: {
-    width: 300,
-    aspectRatio:  1/1,
-    transform: [{ scaleX: -1 }],
-  },
-  imagePic: {
-    width: 350,
-    aspectRatio: 1/1,
-    borderRadius: 1,
+
+  camera: {
+    width: '90%',
+    aspectRatio: 3/4,
+    borderRadius: 20,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: 'gray',
-
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    marginHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    elevation: 5,
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
   },
 });

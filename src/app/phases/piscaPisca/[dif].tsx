@@ -1,6 +1,6 @@
 import { Camera, CameraType, FaceDetectionResult } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Modal } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 import ButtonGame from '../../components/ButtonGame';
 
 import { Entypo } from '@expo/vector-icons';
@@ -23,7 +23,6 @@ const { width, height } = Dimensions.get('window');
 
 export default function ImiteAExpressao() {
   const [permission, requestPermission] = Camera.useCameraPermissions(); //Const permissao para uso da camera
-  const cameraRef = useRef(null);
   const [piscouEsquerdo, setPiscouEsquerdo] = useState(5);
   const [piscouDireito, setPiscouDireito] = useState(0);
   const [fechouOlhos, setFechouOlhos] = useState(0);
@@ -142,6 +141,7 @@ export default function ImiteAExpressao() {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor={colors.backGroundTitle}/>
         <Title title='Permissão' />
         <SpeechText style={{}} text={'Você precissa concerder permissão para poder jogar essa fase'} />
         <View style={styles.game}>
@@ -165,6 +165,7 @@ export default function ImiteAExpressao() {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor={colors.backGroundTitle}/>
       <Title title='Pisca Pisca' />
       <SpeechText style={{}} text={'Você deve piscar os olhos de acordo com a instrução'} />
       <Correct isVisible={animated} onAnimationFinish={resetGame}/>
@@ -173,7 +174,6 @@ export default function ImiteAExpressao() {
             <Camera
             style={styles.camera}
             type={CameraType.front}
-            ref={cameraRef}
             onFacesDetected={handleFaceDetector}
             faceDetectorSettings={{
                 mode: FaceDetector.FaceDetectorMode.fast,
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   viewCamera: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 400,
+    width: '80%',
     aspectRatio: 3/4,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
 
   camera: {
-    width: 350,
+    width: '90%',
     aspectRatio: 3/4,
     borderRadius: 20,
     borderWidth: 1,
@@ -227,26 +227,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: 'gray',
   },
-  picImage: {
-    width: 300,
-    aspectRatio:  1/1,
-    transform: [{ scaleX: -1 }],
-  },
   
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    marginHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    elevation: 5,
-  },
   text: {
     fontSize: 24,
     fontWeight: 'bold',

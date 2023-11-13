@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Dimensions} from 'react-native';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Importe o AsyncStorage
 import { router } from 'expo-router';
@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 // Importe a interface de imagem
 import { ImageSourcePropType } from 'react-native';
 import { PersonData } from './components/types';
+import { FontAwesome } from '@expo/vector-icons';
 
 // Importe as imagens do arquivo expressionImages.tsx
 import expressionImages from './config/expressionImages';
@@ -16,6 +17,9 @@ import { StatusBar } from 'expo-status-bar';
 import colors from './config/colors';
 import SelectedAvatar from './modal/SelectAvatar';
 
+const { width, height } = Dimensions.get('window');
+
+
 export default function CreateProfile() {
   const [inputName, setInputName] = useState('');
   const [age, setAge] = useState(23);
@@ -24,6 +28,7 @@ export default function CreateProfile() {
   const [user, setUser] = useState<PersonData>();
   const [feedback, setFeedback] = useState('');
   const [editMode, setEditMode] = useState(false);
+  const [modo, setModo] = useState<boolean>(false);
 
   const [isAvatarModalVisible, setAvatarModalVisible] = useState(false);
 
@@ -150,15 +155,39 @@ export default function CreateProfile() {
     }
     saveProfileData();
   };
+
+
+
   return (
     <View style={styles.container}>
 
       <SpeechText style={{}} text={'Crie um perfil, você tem que selecionar um avatar, inserir nome e idade'} />
 
       <Title title='Adicione um perfil' />
-
+      <View style={styles.buttonNavigat}>
+          <TouchableOpacity style={[styles.touchNavigat, {borderTopLeftRadius: 40}, modo ? null : styles.actived]} onPress={() => setModo(false)}>
+           <FontAwesome name="user" size={40} color="black" /> 
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.touchNavigat, {borderBottomLeftRadius: 40}, modo ? styles.actived : null]} onPress={() => setModo(true)}>
+            <FontAwesome name="gear" size={40} color="black" />
+          </TouchableOpacity>
+      </View>
       <View style={styles.game}>
-        <View style={{ width: '100%', flexDirection: 'row', flexWrap: 'wrap' }}>
+        {!modo ? 
+          <View style={{width: '100%'}}>
+            <View style={{width: width - 30, backgroundColor: 'white', borderRadius: 20, elevation: 5, alignItems: 'center', marginBottom: 20}}> 
+                {selectedAvatar && <Image source={selectedAvatar} style={styles.avatarSelected} />}
+            </View>
+            <View style={{width: width - 30, backgroundColor: 'white', borderRadius: 20, elevation: 5, alignItems: 'center'}}> 
+                {selectedAvatar && <Image source={selectedAvatar} style={styles.avatarSelected} />}
+            </View>
+           
+          </View>
+          ://Alteração de tela
+          <Text>Config</Text>
+        }
+
+        {/* <View style={{ width: '100%', flexDirection: 'row', flexWrap: 'wrap' }}>
           <TouchableOpacity disabled={!editMode} onPress={openAvatarSelection} style={styles.avatarButton}>
             {selectedAvatar ? (
               <Image source={selectedAvatar} style={styles.avatarSelected} />
@@ -211,7 +240,7 @@ export default function CreateProfile() {
           <Text style={{ color: 'purple' }}>Salvar Alterações</Text>
         </TouchableOpacity>
 
-        {feedback && <Text style={{ color: 'red', position: 'absolute', bottom: 0 }}>{feedback}</Text>}
+        {feedback && <Text style={{ color: 'red', position: 'absolute', bottom: 0 }}>{feedback}</Text>} */}
       </View>
 
       <SelectedAvatar
@@ -309,4 +338,30 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 20,
   },
+
+  buttonNavigat : {
+    width: 50, 
+    backgroundColor: 'white',
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: 150, 
+    position: 'absolute', 
+    right: 0, 
+    top: height/2 - 75, 
+    flexDirection: 'column',
+    borderTopLeftRadius: 40,
+    borderBottomLeftRadius: 40,
+    elevation: 5,
+  },
+
+  touchNavigat : {
+  height: 75, 
+      justifyContent: 'center', 
+    width: '100%', 
+    alignItems: 'center'
+  },
+
+  actived : {
+    backgroundColor: 'purple'
+  }
 });
