@@ -11,6 +11,7 @@ import * as FaceDetector from 'expo-face-detector';
 import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams } from 'expo-router';
 import { Dificuldade } from '../../utils/utils';
+import Correct from '../../modal/Animate';
 
 const comandos = [
     'Pisque ambos os olhos',
@@ -26,7 +27,7 @@ export default function ImiteAExpressao() {
   const [piscouEsquerdo, setPiscouEsquerdo] = useState(5);
   const [piscouDireito, setPiscouDireito] = useState(0);
   const [fechouOlhos, setFechouOlhos] = useState(0);
-  const [olhosAberto, setOlhosAberto] = useState(false);
+  const [animated, setAnimated] = useState(false);
   const [currentComando, setCurrentComando] = useState(
     comandos[Math.floor(Math.random() * comandos.length)]   
   );
@@ -52,20 +53,11 @@ export default function ImiteAExpressao() {
   }, [diff]);
 
 
-  useEffect(() =>{
-    if (sucessoNecessario <= 0){
-        console.log('correto');
-        resetGame();
-    }
-  }, [sucessoNecessario])
-
 
 
 
   const resetGame = () => {
-    setFechouOlhos(0);
-    setPiscouDireito(0);
-    setPiscouEsquerdo(0);
+    setAnimated(false);
     let randomIndex = Math.floor(Math.random() * comandos.length);
     let newCommand = comandos[randomIndex];
     setCurrentComando(newCommand);
@@ -76,6 +68,20 @@ export default function ImiteAExpressao() {
       } else if (dificuldade === 'dificil') {
         setSucessoNecessario(7);
       }
+
+  }
+
+  const verificar= () => {
+    setFechouOlhos(0);
+    setPiscouDireito(0);
+    setPiscouEsquerdo(0);
+    const sucesso = sucessoNecessario - 1
+    if (sucesso <= 0){
+        console.log('correto');
+        setAnimated(true);
+    } else {
+      setSucessoNecessario(sucesso);
+    }
   }
 
 
@@ -108,30 +114,18 @@ export default function ImiteAExpressao() {
             
             if (piscouEsquerdo >= 4) {
                 console.log('piscou esquerdo')
-                setSucessoNecessario(sucessoNecessario - 1);
-                setFechouOlhos(0);
-                setPiscouDireito(0);
-                setPiscouEsquerdo(0);
-                setOlhosAberto(true);
+                verificar();
 
             }
             if (piscouDireito >= 4) {
                 console.log('piscou direito')
-                setSucessoNecessario(sucessoNecessario - 1);
-                setFechouOlhos(0);
-                setPiscouDireito(0);
-                setPiscouEsquerdo(0);
-                setOlhosAberto(true);
+                verificar();
 
             }
 
             if (fechouOlhos >= 4) {
                 console.log('fechou os olhos')
-                setSucessoNecessario(sucessoNecessario - 1);
-                setFechouOlhos(0);
-                setPiscouDireito(0);
-                setPiscouEsquerdo(0);
-                setOlhosAberto(true);
+                verificar();
 
             }
         }
@@ -173,6 +167,7 @@ export default function ImiteAExpressao() {
     <View style={styles.container}>
       <Title title='Pisca Pisca' />
       <SpeechText style={{}} text={'Você deve piscar os olhos de acordo com a instrução'} />
+      <Correct isVisible={animated} onAnimationFinish={resetGame}/>
       <View style={styles.game}>
         <View style={styles.viewCamera}>
             <Camera
@@ -190,8 +185,11 @@ export default function ImiteAExpressao() {
             >
             </Camera>
         </View>
+              <View style={{width: '90%', marginTop: 20, backgroundColor: 'white', padding: 10, borderRadius: 10, elevation: 5}}>
+                <Text style={{fontSize: 32, color: colors.title ,fontWeight: "bold"}}>{currentComando + ' ' + sucessoNecessario + ' vezes'}  </Text>
 
-            <Text>Comando: {currentComando + ' ' + sucessoNecessario + ' vezes'}  </Text>
+              </View>
+
       </View>
     </View>
   );
