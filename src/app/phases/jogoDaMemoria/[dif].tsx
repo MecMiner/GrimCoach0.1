@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef} from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
@@ -9,8 +9,9 @@ import StatusGame from '../../components/StatusGame';
 import Correct from '../../modal/Animate';
 import colors from '../../config/colors';
 import { StatusBar } from 'expo-status-bar';
-import { Dificuldade } from '../../utils/utils';
+import { Dificuldade, loadPerfilLogado, salvarAvanco } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
+import { PersonData } from '../../components/types';
 
 
 
@@ -31,6 +32,63 @@ export default function MemoryGame() {
   const [animate, setAnimate] = useState(false);
   const [areCardsVisible, setAreCardsVisible] = useState(true);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.jogoDaMemoria[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.jogoDaMemoria[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
+
 
   const { dif } = useLocalSearchParams();
 
@@ -124,6 +182,7 @@ export default function MemoryGame() {
       initializeGame(); // Iniciar um novo jogo após a reinicialização
     } else {
       setIsSuccessModalVisible(true);
+      salvarProgresso();
     }
 
   };
@@ -156,7 +215,7 @@ export default function MemoryGame() {
             </TouchableOpacity>
           ))}
 
-          <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/encontreOErro/${diff}`} />
+          <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/selectLevel`} />
         </View>
       </View>
     </View>

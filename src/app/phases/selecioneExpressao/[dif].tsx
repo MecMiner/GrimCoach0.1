@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Image, StyleSheet, Text, ImageBackground, ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages'; // Certifique-se de que a importação está correta
 import expressionName from '../../config/expressionName'; // Certifique-se de que a importação está correta
@@ -11,11 +11,12 @@ import ButtonGame from '../../components/ButtonGame';
 import Correct from '../../modal/Animate';
 import colors from '../../config/colors';
 import { useLocalSearchParams } from 'expo-router';
-import { Dificuldade, generateRandomOptions } from '../../utils/utils';
+import { Dificuldade, generateRandomOptions, loadPerfilLogado, salvarAvanco, shuffleArray } from '../../utils/utils';
+import { PersonData } from '../../components/types';
 
 
 export default function SelecioneExpressao() {
-  const [current, setCurrent] = useState<number>(1);
+  const [current, setCurrent] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
   const [correctEmotion, setCorrectEmotion] = useState<string>('');
   const [options, setOptions] = useState<string[]>([]);
@@ -23,6 +24,63 @@ export default function SelecioneExpressao() {
   const [animate, setAnimate] = useState(false);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [image, setImage] = useState<ImageSourcePropType>()
+
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.selecioneExpressao[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.selecioneExpressao[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
+
 
   const { dif } = useLocalSearchParams();
 
@@ -36,7 +94,8 @@ export default function SelecioneExpressao() {
 
   const atualizarImages = () => {
     // Escolhe aleatoriamente a emoção correta
-    const randomEmotion = expressionName[Math.floor(Math.random() * expressionName.length)];
+    const randomArrayEmotion = shuffleArray(expressionName)
+    const randomEmotion = randomArrayEmotion[current]
 
 
     // Define a imagem aleatória com base na emoção correta
@@ -64,22 +123,23 @@ export default function SelecioneExpressao() {
 
   const checkEmotion = (selectedEmotion: string) => {
     if (selectedEmotion === correctEmotion) {
-      sucess();
+      setAnimate(true);
     } else {
       setFeedback('Tente novamente, a emoção escolhida não está correta.');
     }
   };
 
-  const sucess = () => {
-      setAnimate(true);
-  }
-
 
   const resetPhase = () => {
-    // Limpa o campo de entrada e feedback
-    setFeedback('');
-    atualizarImages();
     setAnimate(false);
+    if (current <= 4){
+      setCurrent(current + 1)
+      setFeedback('');
+      atualizarImages();
+    } else {
+      setIsSuccessModalVisible(true);
+      salvarProgresso();
+    }
   };
 
   return (
@@ -89,7 +149,7 @@ export default function SelecioneExpressao() {
       <Correct isVisible={animate} onAnimationFinish={resetPhase} />
       <SpeechText style={{}} text={'Selecione a expressão de acordo com a imagem'} />
 
-      <StatusGame atual={current} total={5} />
+      <StatusGame atual={current + 1} total={5} />
 
       <View style={styles.game}>
 
@@ -129,7 +189,7 @@ export default function SelecioneExpressao() {
         </View>
 
         <Text style={styles.feedback}>{feedback}</Text>
-        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/ligueExpressao/${diff}`} />
+        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/selectLevel`} />
       </View>
     </View>
   );

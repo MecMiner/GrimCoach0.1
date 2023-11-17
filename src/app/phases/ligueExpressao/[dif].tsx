@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Image, TouchableOpacity, Button, StyleSheet, Text, ImageBackground, TouchableWithoutFeedback, ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages'; // Certifique-se de que a importação está correta
 import expressionName from '../../config/expressionName'; // Certifique-se de que a importação está correta
@@ -8,10 +8,14 @@ import Title from '../../components/title';
 import StatusGame from '../../components/StatusGame';
 import { StatusBar } from 'expo-status-bar';
 import colors from '../../config/colors';
-import { Dificuldade, generateRandomOptions, shuffleArray } from '../../utils/utils';
+import { Dificuldade, generateRandomOptions, loadPerfilLogado, salvarAvanco, shuffleArray } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
 import Correct from '../../modal/Animate';
+import { PersonData } from '../../components/types';
 
+
+
+const TOTAL_ROUNDS = 3;
 export default function LigueExpressao() {
   const [respost, setRespost] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<string>('');
@@ -25,9 +29,64 @@ export default function LigueExpressao() {
   const [imagenSelected, setImagenSelected] = useState<ImageSourcePropType>();
   const [animated, setAnimated] = useState(false);
 
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.ligueExpressao[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.ligueExpressao[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
+
 
   
-const TOTAL_ROUNDS = 3;
 
   const { dif } = useLocalSearchParams();
 
@@ -114,6 +173,7 @@ const TOTAL_ROUNDS = 3;
 
     } else {
       setIsSuccessModalVisible(true);
+      salvarProgresso();
     }
   } 
 
@@ -157,7 +217,7 @@ const TOTAL_ROUNDS = 3;
         {/* Feedback para o usuário */}
         <Text style={styles.feedback}>{feedback}</Text>
 
-        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/jogoDaMemoria/${diff}`}/>
+        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/selectLevel`}/>
       </View>
     </View>
   );

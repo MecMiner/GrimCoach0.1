@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Dimensions, ScrollView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Importe o AsyncStorage
 import { router, Link } from 'expo-router';
@@ -15,6 +15,8 @@ import SpeechText from './components/SpeechText';
 import { StatusBar } from 'expo-status-bar';
 import colors from './config/colors';
 import SelectedAvatar from './modal/SelectAvatar';
+
+const { width, height } = Dimensions.get('window');
 
 export default function CreateProfile() {
   const [inputName, setInputName] = useState('');
@@ -50,8 +52,32 @@ export default function CreateProfile() {
 
   const saveProfileData = async () => { 
     try {
-      const id = uuid.v4();
+      const id: string = uuid.v4() as string;
       const date = new Date();
+      const newFasesCompletas = {
+        compareExpressions: { facil: 0, medio: 0, dificil: 0 },
+        escrevaExpressao: { facil: 0, medio: 0, dificil: 0 },
+        ligueExpressao: { facil: 0, medio: 0, dificil: 0 },
+        jogoDaMemoria: { facil: 0, medio: 0, dificil: 0 },
+        piscaPica: { facil: 0, medio: 0, dificil: 0 },
+        sorriaEstaSendoFilmado: { facil: 0, medio: 0, dificil: 0 },
+        encontreOErro: { facil: 0, medio: 0, dificil: 0 },
+        imiteAExpressao: { facil: 0, medio: 0, dificil: 0 },
+        selecioneExpressao: { facil: 0, medio: 0, dificil: 0 },
+        chefinMandou: {facil: 0, medio: 0, dificil: 0}
+      };
+      const newTempoJogado = {
+        compareExpressions: { facil: 0, medio: 0, dificil: 0 },
+        escrevaExpressao: { facil: 0, medio: 0, dificil: 0 },
+        ligueExpressao: { facil: 0, medio: 0, dificil: 0 },
+        jogoDaMemoria: { facil: 0, medio: 0, dificil: 0 },
+        piscaPica: { facil: 0, medio: 0, dificil: 0 },
+        sorriaEstaSendoFilmado: { facil: 0, medio: 0, dificil: 0 },
+        encontreOErro: { facil: 0, medio: 0, dificil: 0 },
+        imiteAExpressao: { facil: 0, medio: 0, dificil: 0 },
+        selecioneExpressao: { facil: 0, medio: 0, dificil: 0 },
+        chefinMandou: {facil: 0, medio: 0, dificil: 0}
+      };
       const newData = {
         id: id,
         name: inputName,
@@ -59,7 +85,8 @@ export default function CreateProfile() {
         avatar: avatarName,
         pontos: 0,
         dataCriacao: date,
-        // Adicione outras informações aqui, se necessário
+        fasesCompletas: newFasesCompletas,
+        tempoJogado: newTempoJogado,
       };
 
       const response = await AsyncStorage.getItem('@grimcoach:profile');
@@ -108,28 +135,33 @@ export default function CreateProfile() {
             <Ionicons name="ios-add" size={60} color="#888" />
           )}
         </TouchableOpacity>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite o nome"
-            placeholderTextColor="#888"
-            value={inputName}
-            onChangeText={(text) => setInputName(text)}
-          />
-        <View style={styles.ageView}>
-          <Text style={styles.ageText}>Idade: {Math.round(age)}</Text>
-          <Slider
-            style={styles.slider}
-            value={age}
-            minimumValue={0}
-            maximumValue={100}
-            step={1}
-            onValueChange={(value) => setAge(value)}
-            minimumTrackTintColor="#30C28E" // Cor da trilha preenchida
-            maximumTrackTintColor="#ccc" // Cor da trilha não preenchida
-            thumbTintColor="#30C28E" // Cor do "thumb" (o marcador do slider)
-            
-          />
-        </View>
+        <View style={{ width: width - 30, backgroundColor: 'white', borderRadius: 20, elevation: 5, alignItems: 'center', marginBottom: 20, flexDirection: 'row' }}>
+                <TextInput
+
+                  style={styles.input}
+                  placeholder="Digite o nome"
+                  placeholderTextColor="#888"
+                  value={inputName}
+                  onChangeText={(text) => setInputName(text)}
+                />
+              </View>
+              <View style={{ width: width - 30, backgroundColor: 'white', borderRadius: 20, elevation: 5, alignItems: 'center', justifyContent: 'center', marginBottom: 20, flexDirection: 'row', padding: 10 }}>
+                <Text style={styles.ageText}>Idade: {Math.round(age)}</Text>
+
+
+                <Slider
+                  style={styles.slider}
+                  value={age}
+                  minimumValue={0}
+                  maximumValue={100}
+                  step={1}
+                  onValueChange={(value) => setAge(value)}
+                  minimumTrackTintColor="#30C28E" // Cor da trilha preenchida
+                  maximumTrackTintColor="#ccc" // Cor da trilha não preenchida
+                  thumbTintColor="#30C28E" // Cor do "thumb" (o marcador do slider)
+
+                />
+              </View>
 
           <TouchableOpacity onPress={createProfile} style={styles.buttonConfig}>
             <Text style={{color: 'purple'}}>Criar Perfil</Text>
@@ -175,7 +207,6 @@ const styles = StyleSheet.create({
     width: 300,
     height: 50,
     borderColor: '#ccc',
-    borderWidth: 1,
     paddingHorizontal: 20,
     fontSize: 24,
     color: '#333',
@@ -216,7 +247,6 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   ageView:{
-    borderWidth: 1,
     textAlign: 'left',
     backgroundColor: 'white',
     borderColor: '#ccc',
@@ -224,13 +254,11 @@ const styles = StyleSheet.create({
   },
   ageText: {
     paddingHorizontal: 20,
-    marginTop: 20,
     fontSize: 24,
     color: '#888',
   },
   slider: {
     width: 300,
     height: 40,
-    marginBottom: 20,
   },
 });

@@ -52,5 +52,6 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 30,
         elevation: 5,
+        zIndex: 999,
     }
 })

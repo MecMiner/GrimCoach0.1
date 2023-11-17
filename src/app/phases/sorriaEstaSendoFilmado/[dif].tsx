@@ -9,20 +9,13 @@ import SpeechText from '../../components/SpeechText';
 import * as FaceDetector from 'expo-face-detector';
 import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams } from 'expo-router';
-import { Dificuldade } from '../../utils/utils';
+import { Dificuldade, loadPerfilLogado, salvarAvanco } from '../../utils/utils';
 import Correct from '../../modal/Animate';
+import StatusGame from '../../components/StatusGame';
+import SuccessModal from '../../modal/sucess';
+import { PersonData } from '../../components/types';
 
 
-const comandos: ImageSourcePropType[] = [
-  require("./../../../assets/phases/chefimMandou/1.png"),
-  require("./../../../assets/phases/chefimMandou/2.png"),
-  require("./../../../assets/phases/chefimMandou/3.png"),
-  require("./../../../assets/phases/chefimMandou/4.png"),
-  require("./../../../assets/phases/chefimMandou/5.png"),
-  require("./../../../assets/phases/chefimMandou/6.png"),
-  require("./../../../assets/phases/chefimMandou/7.png"),
-  require("./../../../assets/phases/chefimMandou/8.png"),
-]
 
 const comandosTexto: string[] = [
   'Pare...',
@@ -34,11 +27,72 @@ const { width, height } = Dimensions.get('window');
 
 export default function ImiteAExpressao() {
   const [permission, requestPermission] = Camera.useCameraPermissions(); //Const permissao para uso da camera
-
+  let sorrindo = 0;
+  let parouSorriso = 0;
   const [animated, setAnimated] = useState(false);
-  const [currentComando, setCurrentComando] = useState<number>();
+  const [currentComando, setCurrentComando] = useState<number>(1);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [sucessoNecessario, setSucessoNecessario] = useState(0);
+  const [atual, setAtual] = useState(1);
+  const [concluiuFase, setConcluiuFase] = useState(false);
+
+  
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.sorriaEstaSendoFilmado[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.sorriaEstaSendoFilmado[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
+
 
   const { dif } = useLocalSearchParams();
 
@@ -56,17 +110,21 @@ export default function ImiteAExpressao() {
       } else if (dificuldade === 'dificil') {
         setSucessoNecessario(7);
       }
+      console.log('aqui 1')
   }, [diff]);
 
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * comandos.length)
-    setCurrentComando(randomIndex)
-  }, [dificuldade])
 
 
 
   const resetGame = () => {
-
+    setAnimated(false);
+    if(atual < 5){
+      setCurrentComando(1);
+      setAtual(atual+1)
+    } else {
+      setConcluiuFase(true);
+      salvarProgresso();
+    }
 
   }
 
@@ -75,12 +133,29 @@ export default function ImiteAExpressao() {
   }
 
 
-  function handleFaceDetector({faces}: FaceDetectionResult){
-    //console.log(faces);
+
+
+  const  handleFaceDetector = ({faces}: FaceDetectionResult) => {
+
 
     const face = faces[0] as any;
 
     if (face){
+
+      if (face.smilingProbability > 0.5){
+        parouSorriso = 0;
+        sorrindo = sorrindo + 1;
+        if (sorrindo > 5){
+          setCurrentComando(0)
+        }
+      } else {
+        sorrindo = 0;
+        parouSorriso = parouSorriso + 1;
+        if (parouSorriso > 5 && currentComando === 0){
+          setAnimated(true);
+         
+        }
+      }
         
 
 
@@ -97,6 +172,7 @@ export default function ImiteAExpressao() {
       <View style={styles.container}>
         <StatusBar backgroundColor={colors.backGroundTitle}/>
         <Title title='Permissão' />
+        
         <SpeechText style={{}} text={'Você precissa concerder permissão para poder jogar essa fase'} />
         <View style={styles.game}>
           <View style={{ flexDirection: 'column' }}>
@@ -113,7 +189,6 @@ export default function ImiteAExpressao() {
     );
   }
 
-  
 
 
 
@@ -121,8 +196,10 @@ export default function ImiteAExpressao() {
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.backGroundTitle}/>
       <Title title='Sorria, está sendo filmado' />
-      <SpeechText style={{}} text={'Você deve piscar os olhos de acordo com a instrução'} />
+      <StatusGame atual={atual} total={5}/>
+      <SpeechText style={{}} text={'Você sorrir ou parar de sorri quando for pedido'} />
       <Correct isVisible={animated} onAnimationFinish={resetGame}/>
+      <SuccessModal isVisible={concluiuFase} nextPag={'/selectLevel'}/>
       <View style={styles.game}>
         <View style={styles.viewCamera}>
             <Camera
@@ -139,11 +216,8 @@ export default function ImiteAExpressao() {
             >
             </Camera>
         </View>
-              <View style={{width: "30%", aspectRatio: 1, marginTop: 20, backgroundColor: 'white', padding: 10, borderRadius: 10, elevation: 5}}>
-                <Image source={comandos[1]} style={{width: '100%', height: '100%'}}/>
-              </View>
               <View style={{width: '30%', marginTop: 10, padding: 10, backgroundColor: 'white', borderRadius: 10, elevation: 5}}>
-                 <Text style={{width: '100%', fontSize: 32, color: colors.title ,fontWeight: "bold"}}>{comandosTexto[1]}  </Text>
+                 <Text style={{width: '100%', fontSize: 32, color: colors.title ,fontWeight: "bold"}}>{comandosTexto[currentComando]}  </Text>
               </View>
 
       </View>

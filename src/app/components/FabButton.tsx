@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         position: 'absolute',
+        zIndex: 999,
     },
     avatar: {
         justifyContent: 'center',
@@ -96,13 +97,16 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         elevation: 5,
         position: 'absolute',
+        zIndex: 999,
     },
     menu: {
         width: 50,
         height: 50,
         borderRadius: 25,
+        zIndex: 999,
     },
     actions: {
         flexDirection: 'row',
+        zIndex: 999,
     }
 })

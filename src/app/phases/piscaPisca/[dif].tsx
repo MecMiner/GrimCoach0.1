@@ -3,15 +3,19 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 import ButtonGame from '../../components/ButtonGame';
 
-import { Entypo } from '@expo/vector-icons';
 import colors from '../../config/colors';
 import Title from '../../components/title';
 import SpeechText from '../../components/SpeechText';
 import * as FaceDetector from 'expo-face-detector';
 import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams } from 'expo-router';
-import { Dificuldade } from '../../utils/utils';
+import { Dificuldade, loadPerfilLogado, salvarAvanco } from '../../utils/utils';
 import Correct from '../../modal/Animate';
+import StatusGame from '../../components/StatusGame';
+import SuccessModal from '../../modal/sucess';
+import { Entypo } from '@expo/vector-icons';
+import { PersonData } from '../../components/types';
+
 
 const comandos = [
     'Pisque ambos os olhos',
@@ -23,32 +27,90 @@ const { width, height } = Dimensions.get('window');
 
 export default function ImiteAExpressao() {
   const [permission, requestPermission] = Camera.useCameraPermissions(); //Const permissao para uso da camera
-  const [piscouEsquerdo, setPiscouEsquerdo] = useState(5);
-  const [piscouDireito, setPiscouDireito] = useState(0);
-  const [fechouOlhos, setFechouOlhos] = useState(0);
+  let piscouDireito = 0;
+  let fechouOlhos = 0;
+  let piscouEsquerdo = 0;
+  const [atual, setAtual] = useState (1)
   const [animated, setAnimated] = useState(false);
   const [currentComando, setCurrentComando] = useState(
     comandos[Math.floor(Math.random() * comandos.length)]   
   );
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [sucessoNecessario, setSucessoNecessario] = useState(0);
+  const [concluiuFase, setConcluiuFase] = useState(false);
+
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.piscaPica[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.piscaPica[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
+
 
   const { dif } = useLocalSearchParams();
 
   const diff = Array.isArray(dif) ? dif[0] : dif;
 
-  useEffect(() => {
-    if (diff === 'facil' || diff === 'medio' || diff === 'dificil') {
-      setDificuldade(diff);
-    }
+  const difficultyMap = {
+    facil: 3,
+    medio: 5,
+    dificil: 7,
+  };
 
-    if (dificuldade === 'facil') {
-        setSucessoNecessario(3);
-      } else if (dificuldade === 'medio') {
-        setSucessoNecessario(5);
-      } else if (dificuldade === 'dificil') {
-        setSucessoNecessario(7);
-      }
+  useEffect(() => {
+    if (diff && (diff in difficultyMap)) {
+      setDificuldade(diff as Dificuldade);
+      setSucessoNecessario(difficultyMap[diff as Dificuldade]);
+    }
   }, [diff]);
 
 
@@ -57,34 +119,38 @@ export default function ImiteAExpressao() {
 
   const resetGame = () => {
     setAnimated(false);
-    let randomIndex = Math.floor(Math.random() * comandos.length);
-    let newCommand = comandos[randomIndex];
-    setCurrentComando(newCommand);
-    if (dificuldade === 'facil') {
-        setSucessoNecessario(3);
-      } else if (dificuldade === 'medio') {
-        setSucessoNecessario(5);
-      } else if (dificuldade === 'dificil') {
-        setSucessoNecessario(7);
-      }
+    if (atual < 3){
+      let randomIndex = Math.floor(Math.random() * comandos.length);
+      let newCommand = comandos[randomIndex];
+      setCurrentComando(newCommand);
+      setSucessoNecessario(difficultyMap[dificuldade]); 
+      setAtual(atual + 1);    
+    } else {
+      setConcluiuFase(true);
+      salvarProgresso();
+    }
+
 
   }
 
   const verificar= () => {
-    setFechouOlhos(0);
-    setPiscouDireito(0);
-    setPiscouEsquerdo(0);
+    piscouEsquerdo = (0);
+    piscouDireito = (0);
+    fechouOlhos = (0);
     const sucesso = sucessoNecessario - 1
     if (sucesso <= 0){
         console.log('correto');
         setAnimated(true);
+
+
     } else {
       setSucessoNecessario(sucesso);
+
     }
   }
 
 
-  function handleFaceDetector({faces}: FaceDetectionResult){
+  const  handleFaceDetector = ({faces}: FaceDetectionResult) => {
     //console.log(faces);
 
     const face = faces[0] as any;
@@ -92,19 +158,19 @@ export default function ImiteAExpressao() {
     if (face){
         if (currentComando == 'Pisque o olho esquerdo'){
             if(face.leftEyeOpenProbability > 0.5 && face.rightEyeOpenProbability < 0.3){
-                setPiscouEsquerdo(piscouEsquerdo + 1);
+                piscouEsquerdo = piscouEsquerdo + 1;
             }
         }
         if (currentComando === 'Pisque o olho direito') {
             if (face.rightEyeOpenProbability > 0.5 && face.leftEyeOpenProbability < 0.3){
-                setPiscouDireito(piscouDireito + 1);
+                piscouDireito = (piscouDireito + 1);
 
             } 
         }
         
         if (currentComando === 'Pisque ambos os olhos') {
             if (face.rightEyeOpenProbability < 0.3 && face.leftEyeOpenProbability < 0.3){
-                setFechouOlhos(fechouOlhos + 1);
+                fechouOlhos = (fechouOlhos + 1);
             } 
         }
 
@@ -112,18 +178,15 @@ export default function ImiteAExpressao() {
         if (face.rightEyeOpenProbability > 0.3 && face.leftEyeOpenProbability > 0.3){
             
             if (piscouEsquerdo >= 4) {
-                console.log('piscou esquerdo')
                 verificar();
 
             }
             if (piscouDireito >= 4) {
-                console.log('piscou direito')
                 verificar();
 
             }
 
             if (fechouOlhos >= 4) {
-                console.log('fechou os olhos')
                 verificar();
 
             }
@@ -167,8 +230,10 @@ export default function ImiteAExpressao() {
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.backGroundTitle}/>
       <Title title='Pisca Pisca' />
+      <StatusGame atual={atual} total={3}/>
       <SpeechText style={{}} text={'Você deve piscar os olhos de acordo com a instrução'} />
       <Correct isVisible={animated} onAnimationFinish={resetGame}/>
+      <SuccessModal isVisible={concluiuFase} nextPag={``}/>
       <View style={styles.game}>
         <View style={styles.viewCamera}>
             <Camera
@@ -232,5 +297,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
+  },
+  
+  viewCompare: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    elevation: 5,
   },
 });

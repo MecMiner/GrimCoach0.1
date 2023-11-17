@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useRef} from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Text, ImageSourcePropType, Animated } from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
@@ -10,7 +10,8 @@ import StatusGame from '../../components/StatusGame';
 import { StatusBar } from 'expo-status-bar';
 import colors from '../../config/colors';
 import { useLocalSearchParams } from 'expo-router';
-import { Dificuldade, shuffleArray } from '../../utils/utils';
+import { Dificuldade, loadPerfilLogado, salvarAvanco, shuffleArray } from '../../utils/utils';
+import { PersonData } from '../../components/types';
 
 
 export default function CompareExpressions() {
@@ -22,6 +23,63 @@ export default function CompareExpressions() {
   const [current, setCurrent] = useState<number>(1);
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [imagens, setImagens] = useState<ImageSourcePropType[]>([])
+
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.encontreOErro[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.encontreOErro[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
+
 
   const { dif } = useLocalSearchParams();
 
@@ -84,6 +142,7 @@ export default function CompareExpressions() {
 
     } else {
       setIsSuccessModalVisible(true);
+      salvarProgresso();
     }
 
 
@@ -123,7 +182,7 @@ export default function CompareExpressions() {
         </View>
         <Text style={styles.feedback}>{feedback}</Text>
       </View>
-      <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/piscaPisca/${dificuldade}`} />
+      <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/selectLevel`}/>
     </View>
   );
 }

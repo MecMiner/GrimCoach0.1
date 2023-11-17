@@ -1,84 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Importe o AsyncStorage
 import { Link, router } from 'expo-router';
-import expressionImages from './config/expressionImages';
-import Title from './components/title';
-import { PersonData } from './components/types';
-import SpeechText from './components/SpeechText';
 import colors from './config/colors';
+
+const { width, height } = Dimensions.get('window');
 
 
 export default function Home() {
-  const [data, setData] = useState<PersonData[]>([]);
-
-
-  const loadProfileData = async () => {
-    try {
-      const storedData = await AsyncStorage.getItem('@grimcoach:profile');
-
-      if (storedData){
-        const parsedData = JSON.parse(storedData);
-        if (parsedData && parsedData.length > 0){
-          console.log(parsedData);
-          setData(parsedData);
-        } else {
-          router.replace('/createProfile')
-        }
-      } else {
-        router.replace('/createProfile')
-      }
-    } catch (error) {
-      console.error('Erro ao carregar dados do perfil:', error);
-    }
-  };
-  
-  useEffect(() => {
-    loadProfileData();
-  }, []);
-
-
-  const login = async (id: string) => {
-    const user = {
-      hash: id,
-    }
-    try {
-      //Seta id do usuário dentro de .hash do token
-      await AsyncStorage.setItem('@grimcoach:token', JSON.stringify(user)).then((e) => {
-        router.replace('/selectLevel')
-      })
-    } catch (error) {
-      console.log('Erro ao inserir User')
-    }
-  }
 
 
   return (
     <View style={styles.container}>
-        <StatusBar backgroundColor={colors.backGroundTitle}/>
-        <SpeechText text={'Selecione um perfil ou crie um'}/>
-        <Title title='Selecione um Perfil'/>
+        <StatusBar backgroundColor={colors.backGroundApp}/>
         <View style={styles.game}>
-        <FlatList
-            data={data}
-            style={{ maxHeight: 650 }}
-            keyExtractor={(item, index) => index.toString()}
-            showsVerticalScrollIndicator= {false}
-            renderItem={({ item }) => (
-              <View>
-                <TouchableOpacity style={styles.avatarButton} onPress={() => login(item.id)}>
-                  <Image source={expressionImages.avatar[item.avatar]} style={styles.avatarSelectionImage} />
-                </TouchableOpacity>
-                <Text style={{ fontSize: 24, color: 'gray', textAlign: 'center', marginBottom: 20 }}>
-                  {item.name}
-                </Text>
-              </View>
-            )}
-          />
-          <Link href={'/createProfile'} asChild>
+          <View style={{width: width/2, height: width/2, elevation: 5}}>
+            <Image style={{width: '100%', height: '100%', borderRadius: 20}} source={require('./../../assets/icon.png')}/>
+
+          </View>
+
+          <Link href={'/selectProfile'} asChild>
             <TouchableOpacity style={styles.buttonConfig}>
-                    <Text style={{color: 'purple'}}>Adicionar Perfil</Text>
+                    <Text style={{color: 'purple'}}>Jogar</Text>
             </TouchableOpacity>
           </Link>
         </View>
@@ -95,7 +39,7 @@ const styles = StyleSheet.create({
 
   game: {
     flex: 1,
-    marginTop: 50,
+    justifyContent: 'center',
     alignItems: 'center'
   },
 

@@ -9,12 +9,13 @@ import Title from '../../components/title';
 import SpeechText from '../../components/SpeechText';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { Dificuldade, shuffleArray } from '../../utils/utils';
+import { Dificuldade, loadPerfilLogado, salvarAvanco, shuffleArray } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
 import expressionImages from '../../config/expressionImages';
 import Correct from '../../modal/Animate';
 import StatusGame from '../../components/StatusGame';
 import SuccessModal from '../../modal/sucess';
+import { PersonData } from '../../components/types';
 
 interface Respost {
   angerLikelihood: string | null,
@@ -49,12 +50,68 @@ export default function ImiteAExpressao() {
   const [respost, setRespost] = useState<string | null>(); //Const resposta para conferir
   const [analyzing, setAnalyzing] = useState<boolean>(false); //Verificar estado da análise
   const [expression, setExpression] = useState<string[]>([]); // Inicialize com uma emoção padrão
-  const [current, setCurrent] = useState<number>(0); //Inicial parte da fase em que esta
+  const [current, setCurrent] = useState<number>(1); //Inicial parte da fase em que esta
   const [feedback, setFeedback] = useState<string>('');
 
   //Constantes de dificuldade da fase
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const { dif } = useLocalSearchParams();
+
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.imiteAExpressao[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.imiteAExpressao[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
 
   const diff = Array.isArray(dif) ? dif[0] : dif;
 
@@ -83,24 +140,19 @@ export default function ImiteAExpressao() {
   
   const checkEmotion = (selectedEmotion: string) => {
     if (selectedEmotion === expression[current]) {
-      sucess();
+      setAnimate(true);
     } else {
-      setImage(null)
+      setImage(null);
+      setImageBase64(undefined);
       setFeedback('Tente novamente, a expressão não corresponde.');
     }
   };
 
-  
-  const sucess = () => {
-    if (current < 3) {
-      setAnimate(true);
-    } else {
-      setIsSuccessModalVisible(true);
-    }
-  }
+
 
   const resetPhase = () => {
     setAnimate(false)
+    if (current < 3) {
     // Limpa o campo de entrada e feedback
     setFeedback('');
     setImage(null)
@@ -108,6 +160,11 @@ export default function ImiteAExpressao() {
 
     // Proxima emoção
     setCurrent(current + 1);
+    } else {
+      setIsSuccessModalVisible(true);
+      salvarProgresso();
+    }
+
   };
   
 
@@ -192,9 +249,6 @@ export default function ImiteAExpressao() {
         return "surpreso";
       }
       if (respost.sorrowLikelihood === "PROBABLE" &&
-        respost.joyLikelihood != "PROBABLE" &&
-        respost.surpriseLikelihood != "PROBABLE" &&
-        respost.angerLikelihood != "PROBABLE" &&
         dificuldade === 'facil') {
         return "triste";
       }
@@ -222,9 +276,6 @@ export default function ImiteAExpressao() {
       return "surpreso";
     }
     if (respost.sorrowLikelihood === "UNLIKELY" &&
-      respost.joyLikelihood != "UNLIKELY" &&
-      respost.surpriseLikelihood != "UNLIKELY" &&
-      respost.angerLikelihood != "UNLIKELY" &&
       dificuldade === 'facil') {
       return "triste";
     }
@@ -370,7 +421,7 @@ export default function ImiteAExpressao() {
         </View>
         <Text style={styles.feedback}>{feedback}</Text>
       </View>
-      <SuccessModal isVisible={isSuccessModalVisible} onRedo={() => console.log('voltar')}  onAdvance={() => setIsSuccessModalVisible(false)}/>
+      <SuccessModal isVisible={isSuccessModalVisible}   nextPag={''}/>
     </View>
   );
 }

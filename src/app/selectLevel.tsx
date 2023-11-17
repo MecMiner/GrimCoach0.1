@@ -3,48 +3,32 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Carousel from './components/PhasesCarousel';
 import Title from './components/title';
 import { StatusBar } from 'expo-status-bar';
-import { PersonData, Token } from './components/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PersonData } from './components/types';
 import SpeechText from './components/SpeechText';
 import FabButton from './components/FabButton';
 import { router } from 'expo-router';
 import colors from './config/colors';
+import { Dificuldade, loadPerfilLogado } from './utils/utils';
 
 
 export default function SelectLevel() {
-  const [dificuldade, setDificuldade] = useState('facil');
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('facil');
   const [user, setUser] = useState<PersonData | null>(null);
 
-  const loadProfileData = async () => {
-    try {
-      const response = await AsyncStorage.getItem('@grimcoach:token');
-      const token: Token | null = response ? JSON.parse(response) : null;
-      if (token) {
-        await AsyncStorage.getItem('@grimcoach:profile').then((data) => {
-          if (data) {
-            const profiles: PersonData[] = JSON.parse(data);
-            const profile = profiles.find((e) => e.id === token.hash);
-            if (profile) {
-              setUser(profile);
-              console.log(profile)
-            }
-          }
-        })
-      } else {
-        console.log('Token nao encontrado')
-      }
-
-    } catch (error) {
-      console.error('Erro ao carregar dados do perfil:', error);
-    }
-  };
 
   useEffect(() => {
-    loadProfileData();
-  }, []); // Executa somente uma vez na montagem
+    const carregarPerfil = async () => {
+      const userLogado = await loadPerfilLogado();
+      if (userLogado) {
+        setUser(userLogado);
+      }
+    };
+  
+    carregarPerfil();
+  }, []);
 
 
-  const handleSelectDificuldade = (novaDificuldade: string) => {
+  const handleSelectDificuldade = (novaDificuldade: Dificuldade) => {
     setDificuldade(novaDificuldade);
     console.log(dificuldade);
   };
@@ -88,7 +72,7 @@ export default function SelectLevel() {
         </View>
 
       </View>
-      <FabButton back={() => { router.replace('/') }} style={styles.fabButton} avatar={user ? user.avatar : 'dragao'} />
+      <FabButton back={() => { router.replace('/selectProfile') }} style={styles.fabButton} avatar={user ? user.avatar : 'dragao'} />
     </View>
   );
 }

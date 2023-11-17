@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Image, TextInput, StyleSheet, Text,ImageSourcePropType } from 'react-native';
 import expressionImages from '../../config/expressionImages';
 import expressionName from '../../config/expressionName';
@@ -11,8 +11,9 @@ import Title from '../../components/title';
 import StatusGame from '../../components/StatusGame';
 import Correct from '../../modal/Animate';
 import colors from '../../config/colors';
-import { Dificuldade, shuffleArray } from '../../utils/utils';
+import { Dificuldade, loadPerfilLogado, salvarAvanco, shuffleArray } from '../../utils/utils';
 import { useLocalSearchParams } from 'expo-router';
+import { PersonData } from '../../components/types';
 
 
 const TOTAL_ROUNDS = 5;
@@ -29,6 +30,63 @@ export default function EscrevaExpressao() {
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [imagemApresentada, setImagemApresentada] = useState<ImageSourcePropType>(expressionImages.facil);
   const { dif } = useLocalSearchParams();
+
+  const [user,setUser] = useState<PersonData>();
+  const tempoRef = useRef(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      tempoRef.current += 1;
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const profile = await loadPerfilLogado();
+      if (profile) {
+        setUser(profile);
+      }
+    };
+  
+    carregarPerfil();
+  }, []); //Carreganmento de Perfil do Usuário
+
+  const salvarProgresso = async () => {
+    try {
+      await new Promise<void>((resolve) => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            const updatedUser = { ...prevUser };
+  
+            // Adiciona pontos
+            updatedUser.pontos += 10;
+  
+            // Marca a fase como concluída
+            updatedUser.fasesCompletas.escrevaExpressao[dificuldade] += 1;
+  
+            // Registra o tempo gasto
+            updatedUser.tempoJogado.escrevaExpressao[dificuldade] += tempoRef.current;
+  
+            // Atualiza o estado e resolve a Promise quando a atualização estiver completa
+            resolve();
+            return updatedUser;
+          }
+  
+          return prevUser;
+        });
+      });
+  
+      // Depois que a Promise é resolvida, chama salvarAvanco
+      if (user) {
+        salvarAvanco(user);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar o progresso:', error);
+    }
+  };
+
 
   const diff = Array.isArray(dif) ? dif[0] : dif;
 
@@ -85,6 +143,7 @@ export default function EscrevaExpressao() {
         setImagemApresentada(expressionImages[dificuldade][expression[imageCurrent]][Math.floor(Math.random() * expressionImages[dificuldade][expression[imageCurrent]].length)])
       }
     } else {
+      salvarProgresso();
       setIsSuccessModalVisible(true);
     }
 
@@ -130,7 +189,7 @@ export default function EscrevaExpressao() {
         <Text style={styles.feedback}>{feedback}</Text>
 
 
-        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/phases/selecioneExpressao/${diff}`}/>
+        <SuccessModal isVisible={isSuccessModalVisible} nextPag={`/selectLevel`}/>
       </View>
     </View>
   );
