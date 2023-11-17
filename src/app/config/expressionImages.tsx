@@ -45,15 +45,29 @@ const expressionImages: ExpressionImages = {
     require('./../../assets/emocoes/medio/surpresa3.png'),
     require('./../../assets/emocoes/medio/surpresa4.png')],
   },
-
   dificil: {
-    feliz: [require('./../../assets/emocoes/facil/felicidade.png')],
-    medo: [require('./../../assets/emocoes/facil/medo.png')],
-    serio: [require('./../../assets/emocoes/facil/seriedade.png')],
-    raiva: [require('./../../assets/emocoes/facil/raiva.png')],
-    triste: [require('./../../assets/emocoes/facil/tristeza.png')],
-    surpreso: [require('./../../assets/emocoes/facil/surpresa.png')]
+    feliz: [require('./../../assets/emocoes/dificil/felicidade.png'),
+    require('./../../assets/emocoes/dificil/felicidade2.png'),
+    require('./../../assets/emocoes/dificil/felicidade3.png'),
+    require('./../../assets/emocoes/dificil/felicidade4.png')],
+    medo: [require('./../../assets/emocoes/dificil/medo.png'),
+    require('./../../assets/emocoes/dificil/medo2.png')],
+    serio: [require('./../../assets/emocoes/dificil/seriedade.png'),
+    require('./../../assets/emocoes/dificil/seriedade2.png'),
+    require('./../../assets/emocoes/dificil/seriedade3.png'),
+    require('./../../assets/emocoes/dificil/seriedade4.png')],
+    raiva: [require('./../../assets/emocoes/dificil/raiva.png'),
+    require('./../../assets/emocoes/dificil/raiva2.png'),
+    require('./../../assets/emocoes/dificil/raiva3.png')],
+    triste: [require('./../../assets/emocoes/dificil/tristeza.png'),
+    require('./../../assets/emocoes/dificil/tristeza2.png'),
+    require('./../../assets/emocoes/dificil/tristeza3.png')],
+    surpreso: [require('./../../assets/emocoes/dificil/surpresa.png'),
+    require('./../../assets/emocoes/dificil/surpresa2.png'),
+    require('./../../assets/emocoes/dificil/surpresa3.png')],
   },
+
+
 
   avatar: {
     baleia: require('./../../assets/avatar/baleia.png'),
